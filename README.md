@@ -1,1 +1,1 @@
-# model-context-protocol
+# Future AGI MCP Server
