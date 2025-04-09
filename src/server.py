@@ -15,47 +15,62 @@ mcp = FastMCP("futureagi", host="0.0.0.0", port=8001)
 @mcp.tool()
 def evaluate(eval_templates: List[EvalTemplateInput], inputs: List[TestCase]):
     """Evaluate the given request using eval templates and inputs
+
+    The inputs are a list of test cases that are used to evaluate the model.
+    The eval_templates are a list of evaluation templates that are used to evaluate the model.
+
+    Evaluation configs can be fetched using the get_eval_config tool.
+    Inputs should contain the required fields depending on the eval template.
     
     Args:
         eval_templates: List[
             {
                 "eval_id": str,
-                "config": Optional[EvalConfig] = {
+                "config": Optional = {
                     "criteria": str,
                     "config": dict,
                     "model": str
                 }
             }
-        EvalTemplateInput:
-            eval_id: str
-            config: Optional[EvalConfig] = {
-                "criteria": str,
-                "config": dict,
-                "model": str
+        ]
+        inputs: List[
+            {
+                "text": Optional[str] = None,
+                "document": Optional[str] = None,
+                "input": Optional[str] = None,
+                "output": Optional[str] = None,
+                "prompt": Optional[str] = None,
+                "criteria": Optional[str] = None,
+                "actual_json": Optional[dict] = None,
+                "expected_json": Optional[dict] = None,
+                "expected_text": Optional[str] = None,
+                "query": Optional[str] = None,
+                "response": Optional[str] = None,
+                "context": Union[List[str], str] = None
             }
-        
-        EvalConfig:
-            criteria: Optional[str] = ""
-            config: Optional[dict] = {}
-            model: Optional[str] = ""
+        ]
     
     Returns:
         List[BatchRunResult]
     """
     eval_client = EvalClient()
-    eval_templates = []
+    constructed_eval_templates = []
     for templateinput in eval_templates:
         current_eval_template = EvalTemplate(config=templateinput.config)
         current_eval_template.eval_id = templateinput.eval_id
-        eval_templates.append(current_eval_template)
+        constructed_eval_templates.append(current_eval_template)
     eval_results = eval_client.evaluate(
-        eval_templates, inputs
+        constructed_eval_templates, inputs
     )
     return eval_results
 
 @mcp.tool()
 def get_eval_config(eval_templates: List[EvalTemplateInput]):
     """Get the evaluation configuration for the given evaluation templates
+
+    The eval_templates are a list of evaluation templates that are used to evaluate the model.
+    The eval_templates should contain the eval_id and the config.
+    The returned config will have the configuration and required fields for the input to the evaluate.
     
     Args:
         eval_templates: List[
@@ -86,16 +101,22 @@ def get_eval_config(eval_templates: List[EvalTemplateInput]):
         List[EvalTemplate]
     """
     eval_client = EvalClient()
-    eval_templates = []
+    constructed_eval_templates = []
     for templateinput in eval_templates:
         current_eval_template = EvalTemplate(config=templateinput.config)
         current_eval_template.eval_id = templateinput.eval_id
-        eval_templates.append(current_eval_template)
-    return eval_client._get_eval_configs(eval_templates)
+        constructed_eval_templates.append(current_eval_template)
+    return eval_client._get_eval_configs(constructed_eval_templates)
 
 @mcp.tool()
 def all_evaluators():
-    """Get all evaluators and their configurations"""
+    """Get all evaluators and their configurations
+
+    When called will return all the evaluators, their functions and their configurations.
+    
+    Returns:
+        List[Evaluator]
+    """
     eval_client = EvalClient()
     return eval_client.list_evaluations()
 
