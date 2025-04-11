@@ -1,5 +1,7 @@
+from src.server import mcp
+
 def main():
-    print("Hello from model-context-protocol!")
+    mcp.run()
 
 
 if __name__ == "__main__":

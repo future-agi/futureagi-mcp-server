@@ -5,7 +5,6 @@ description = "FutureAGI MCP Server"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "futureagi>=0.5.7",
     "httpx>=0.28.1",
     "mcp[cli]>=1.6.0",
     "pydantic>=2.11.2",

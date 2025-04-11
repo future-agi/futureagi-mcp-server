@@ -1,17 +1,15 @@
 # Future AGI MCP Server
 
-A server implementation for the Model Context Protocol (MCP) using FutureAGI, designed to facilitate communication and interaction with Future AGI functionalities.
+A powerful server implementation that integrates with the Future AGI SDK through the Model Context Protocol (MCP). This server provides a standardized and efficient interface for conducting advanced LLM operations, including system optimizations, performance evaluations, and experimental research.
 
 ## Description
 
-This project implements a server that uses the Model Context Protocol (MCP) to enable standardized communication with Future AGI functionalities. It leverages FutureAGI's capabilities to provide a robust and efficient interface for model interactions.
+This project serves as a bridge between your applications and Future AGI's capabilities through the Model Context Protocol (MCP). It enables standardized communication and interaction with Future AGI's powerful features, making it easier to implement and manage complex LLM-based operations.
 
 ## Features
 
-- MCP server implementation
-- Integration with FutureAGI
-- Standardized model communication protocol
-- HTTP-based API endpoints
+- Evaluations
+- Experimentation
 
 ## Requirements
 
