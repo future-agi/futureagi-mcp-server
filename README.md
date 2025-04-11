@@ -24,7 +24,7 @@ This project serves as a bridge between your applications and Future AGI's capab
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/futureagi-mcp-server.git
+git clone https://github.com/future-agi/futureagi-mcp-server.git
 cd futureagi-mcp-server
 ```
 

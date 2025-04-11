@@ -154,7 +154,7 @@ def create_eval(eval_name: str, eval_id: str, config: dict):
     """
     eval_client = EvalClient()
     eval_client.create_evaluation(eval_name, eval_id, config)
-    return json
+    return json.dumps({"status": "success", "message": f"Evaluation {eval_name} created with ID {eval_id}"})
 
 
 @mcp.tool()
