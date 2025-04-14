@@ -1,6 +1,7 @@
 import os
 import argparse
 import json
+import sys
 from mcp.server.fastmcp import FastMCP
 
 # Import tools from their respective modules
@@ -47,4 +48,4 @@ if __name__ == "__main__":
         mcp.run(transport="stdio")
     except Exception as e:
         error_json = json.dumps({"error": str(e)})
-        print(error_json)
+        print(error_json, file=sys.stderr)

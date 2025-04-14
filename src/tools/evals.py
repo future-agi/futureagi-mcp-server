@@ -1,28 +1,32 @@
 import os
+import json
 import requests
+from typing import List
+
 from fi.evals import EvalClient
 from fi.evals.templates import EvalTemplate
-from mcp.server.fastmcp import FastMCP
 from models import EvalTemplateInput
 from fi.testcases import TestCase
-from typing import List, Dict
-import json
+
 
 
 def get_eval_structure(template_id: str):
     """Get the structure of an evaluation using the template_id.
-    
+
     Args:
         template_id: ID of the evaluation template
     """
-    url = os.getenv("FI_BASE_URL") + f"/model-hub/develops/2063cf96-40fc-4840-b5cd-ce48f06c24ea/get_eval_structure/{template_id}/"
+    url = (
+        os.getenv("FI_BASE_URL")
+        + f"/model-hub/develops/2063cf96-40fc-4840-b5cd-ce48f06c24ea/get_eval_structure/{template_id}/"
+    )
     headers = {
-        "Accept": "application/json", 
+        "Accept": "application/json",
         "X-Api-Key": os.getenv("FI_API_KEY"),
         "X-Secret-Key": os.getenv("FI_SECRET_KEY"),
     }
-    json_data = {"eval_type":"preset"}
-    
+    json_data = {"eval_type": "preset"}
+
     try:
         response = requests.post(url, headers=headers, json=json_data)
         response.raise_for_status()
@@ -38,16 +42,16 @@ def get_evals_list_for_create_eval(eval_type: str):
     Returns:
         List[str]: List of evaluation templates and their configurations
     """
-    url = os.getenv("FI_BASE_URL") + "/model-hub/develops/2063cf96-40fc-4840-b5cd-ce48f06c24ea/get_evals_list/"
+    url = (
+        os.getenv("FI_BASE_URL")
+        + "/model-hub/develops/2063cf96-40fc-4840-b5cd-ce48f06c24ea/get_evals_list/"
+    )
     headers = {
         "Accept": "application/json",
         "X-Api-Key": os.getenv("FI_API_KEY"),
         "X-Secret-Key": os.getenv("FI_SECRET_KEY"),
     }
-    json_data = {
-        "eval_type": eval_type,
-        "search_text": ""
-    }
+    json_data = {"eval_type": eval_type, "search_text": ""}
 
     try:
         response = requests.post(url, headers=headers, json=json_data)
@@ -85,7 +89,7 @@ def create_eval(eval_name: str, template_id: str, config: dict):
         }
     )
     """
-    
+
     # Make request to run evaluation
     url = os.getenv("FI_BASE_URL") + "/model-hub/run-eval"
     payload = {
@@ -193,4 +197,4 @@ def all_evaluators():
         List[Evaluator]
     """
     eval_client = EvalClient()
-    return json.dumps(eval_client.list_evaluations()) 
+    return json.dumps(eval_client.list_evaluations())
