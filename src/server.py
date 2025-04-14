@@ -4,16 +4,16 @@ import json
 from mcp.server.fastmcp import FastMCP
 
 # Import tools from their respective modules
-from src.tools.evals import (
+from tools.evals import (
     get_eval_structure,
     get_evals_list_for_create_eval,
     create_eval,
     evaluate,
     all_evaluators,
 )
-from src.tools.datasets import upload_dataset
-from src.tools.protect import protect
-from src.utils import setup_environment
+from tools.datasets import upload_dataset
+from tools.protect import protect
+from utils import setup_environment
 
 # Create an MCP server
 mcp = FastMCP("futureagi", host="0.0.0.0", port=8001)
