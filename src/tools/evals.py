@@ -112,7 +112,7 @@ def create_eval(eval_name: str, template_id: str, config: dict):
         return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error making request to evaluation endpoint: {str(e)}")
-        raise
+        return {"error": str(e)}
 
 
 def evaluate(eval_templates: List[EvalTemplateInput], inputs: List[TestCase]):
