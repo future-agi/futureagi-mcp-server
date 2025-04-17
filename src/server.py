@@ -3,6 +3,8 @@ import argparse
 import json
 import sys
 from mcp.server.fastmcp import FastMCP
+from logger import setup_logging, get_logger
+from constants import SERVER_HOST, SERVER_PORT, SERVER_NAME
 
 # Import tools from their respective modules
 from tools.evals import (
@@ -16,10 +18,11 @@ from tools.datasets import upload_dataset
 from tools.protect import protect
 from utils import setup_environment
 
-# Create an MCP server
-mcp = FastMCP("futureagi", host="0.0.0.0", port=8001)
+# Setup logging at module level
+setup_logging()
+logger = get_logger()
 
-# Register tools with MCP
+mcp = FastMCP(name=SERVER_NAME, host=SERVER_HOST, port=SERVER_PORT)
 mcp.tool()(get_eval_structure)
 mcp.tool()(get_evals_list_for_create_eval)
 mcp.tool()(create_eval)
@@ -28,8 +31,28 @@ mcp.tool()(all_evaluators)
 mcp.tool()(upload_dataset)
 mcp.tool()(protect)
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+
+def start_server():
+    """Start the FutureAGI MCP server."""
+    mcp.run(transport="stdio")
+
+
+def main():
+    """Main entry point for the FutureAGI MCP server.
+
+    Sets up command line argument parsing for API keys and base URL,
+    configures the environment, and starts the MCP server with stdio transport.
+
+    Note: API keys and Base URL are now primarily controlled via environment
+    variables (FI_API_KEY, FI_SECRET_KEY, FI_BASE_URL) and validated by Pydantic Settings.
+    Command-line arguments are removed as settings handle this.
+
+    Environment variables used:
+        FI_API_KEY: FutureAGI API key (Required)
+        FI_SECRET_KEY: FutureAGI secret key (Required)
+        FI_BASE_URL: FutureAGI base URL (Required)
+    """
+    parser = argparse.ArgumentParser(description="FutureAGI MCP Server")
     parser.add_argument("--api_key", type=str, required=False)
     parser.add_argument("--secret_key", type=str, required=False)
     parser.add_argument("--base_url", type=str, required=False)
@@ -37,15 +60,13 @@ if __name__ == "__main__":
     try:
         args = parser.parse_args()
 
-        # Setup environment variables using the imported function
-        setup_environment(
-            api_key=args.api_key or os.getenv("FI_API_KEY", ""),
-            secret_key=args.secret_key or os.getenv("FI_SECRET_KEY", ""),
-            base_url=args.base_url or os.getenv("FI_BASE_URL", ""),
-        )
+        setup_environment(args.api_key, args.secret_key, args.base_url)
 
-        print("Starting MCP server with stdio transport")
-        mcp.run(transport="stdio")
-    except Exception as e:
-        error_json = json.dumps({"error": str(e)})
-        print(error_json, file=sys.stderr)
+        start_server()
+    except ValueError as e:
+        logger.error(f"Environment variable validation failed: {e}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

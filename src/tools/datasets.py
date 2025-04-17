@@ -1,6 +1,10 @@
 import os
+import json
 from fi.datasets import DatasetClient
 from fi.datasets.types import DatasetConfig
+from logger import get_logger
+
+logger = get_logger()
 
 
 def upload_dataset(dataset_name: str, model_type: str, source: str) -> dict:
@@ -21,28 +25,27 @@ def upload_dataset(dataset_name: str, model_type: str, source: str) -> dict:
         dict: Dataset configuration including ID and name
     """
 
-    # Create dataset config
-    config = DatasetConfig(name=dataset_name, model_type=model_type)
+    try:
+        dataset_config = DatasetConfig(name=dataset_name, model_type=model_type)
 
-    # Create dataset client
-    client = DatasetClient(
-        dataset_config=config,
-        fi_api_key=os.getenv("FI_API_KEY"),
-        fi_secret_key=os.getenv("FI_SECRET_KEY"),
-        fi_base_url=os.getenv("FI_BASE_URL"),
-    )
+        dataset_client = DatasetClient(
+            dataset_config=dataset_config,
+            fi_api_key=os.getenv("FI_API_KEY"),
+            fi_secret_key=os.getenv("FI_SECRET_KEY"),
+            fi_base_url=os.getenv("FI_BASE_URL"),
+        )
 
-    # Handle source if provided
-    if source:
-        if isinstance(source, str):
-            # Local file upload
-            client.create(source=source)
-    else:
-        # Create empty dataset
-        client.create()
+        result = None
+        if source and os.path.exists(source):
+            result = dataset_client.create(source=source)
+        else:
+            result = dataset_client.create()
 
-    return {
-        "id": client.dataset_config.id,
-        "name": client.dataset_config.name,
-        "model_type": client.dataset_config.model_type,
-    } 
+        if result:
+            return result
+        else:
+            return json.dumps({"error": "Dataset creation/upload failed unexpectedly."})
+
+    except Exception as e:
+        logger.error(f"Dataset operation failed: {e}", exc_info=True)
+        return json.dumps({"error": str(e)})
