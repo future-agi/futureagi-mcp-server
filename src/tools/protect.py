@@ -1,9 +1,9 @@
 from fi.evals import EvalClient
 from fi.evals import ProtectClient
 from typing import List, Dict
-from logger import get_logger
-from constants import DEFAULT_PROTECT_ACTION, DEFAULT_PROTECT_TIMEOUT
-from models import ProtectRule
+from src.logger import get_logger
+from src.constants import DEFAULT_PROTECT_ACTION, DEFAULT_PROTECT_TIMEOUT
+from src.models import ProtectRule
 
 logger = get_logger()
 
@@ -39,18 +39,36 @@ def protect(
             - reason: Explanation for failure if reason=True
             - time_taken: Total evaluation duration
     """
-    protect_rules_dict = [rule.to_dict() for rule in protect_rules]
-
     try:
         eval_client = EvalClient()
         protect_client = ProtectClient(evaluator=eval_client)
 
+        # Convert timeout from milliseconds to microseconds for the client
+        client_timeout = timeout * 1000
+
+        # Clean up rules before passing to protect_client
+        cleaned_rules = []
+        for rule in protect_rules:
+            rule_dict = rule.model_dump()
+            if rule_dict["metric"] == "Tone":
+                # For Tone metric, keep metric, contains, and type
+                cleaned_rule = {
+                    "metric": rule_dict["metric"],
+                    "contains": rule_dict["contains"],
+                }
+                if rule_dict.get("type"):
+                    cleaned_rule["type"] = rule_dict["type"]
+            else:
+                # For non-Tone metrics, only keep metric
+                cleaned_rule = {"metric": rule_dict["metric"]}
+            cleaned_rules.append(cleaned_rule)
+
         result = protect_client.protect(
             inputs=inputs,
-            protect_rules=protect_rules_dict,
+            protect_rules=cleaned_rules,
             action=action,
             reason=reason,
-            timeout=timeout,
+            timeout=client_timeout,
         )
 
         status = result.get("status", "unknown")
@@ -64,4 +82,7 @@ def protect(
         return result
     except Exception as e:
         logger.error(f"Error during protection evaluation: {e}", exc_info=True)
-        raise
+        return {
+            "status": "error",
+            "messages": f"Error during protection evaluation: {e}",
+        }

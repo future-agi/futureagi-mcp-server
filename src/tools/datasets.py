@@ -2,7 +2,7 @@ import os
 import json
 from fi.datasets import DatasetClient
 from fi.datasets.types import DatasetConfig
-from logger import get_logger
+from src.logger import get_logger
 
 logger = get_logger()
 
@@ -41,8 +41,8 @@ def upload_dataset(dataset_name: str, model_type: str, source: str) -> dict:
         else:
             result = dataset_client.create()
 
-        if result:
-            return result
+        if result.dataset_config.id:
+            return json.dumps({"status": "success", "dataset_id": str(result.dataset_config.id)})
         else:
             return json.dumps({"error": "Dataset creation/upload failed unexpectedly."})
 

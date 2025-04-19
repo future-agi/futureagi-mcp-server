@@ -8,13 +8,14 @@ This project serves as a bridge between your applications and Future AGI's capab
 
 ## Features
 
-- Evaluations
-- Experimentation
+- Evaluations (preset and user)
+- Protect
+- Uploading Dataset
 
 ## Requirements
 
 - Python >= 3.13.1
-- FutureAGI >= 0.5.7
+- FutureAGI >= 0.5.9
 - HTTPX >= 0.28.1
 - MCP CLI >= 1.6.0
 - Pydantic >= 2.11.2
@@ -46,7 +47,7 @@ pip install -e .
 To run the server:
 
 ```bash
-python main.py
+python src/server.py
 ```
 
 ## Project Structure
@@ -58,7 +59,6 @@ futureagi-mcp-server/
 │   ├── models.py                 # Data models and schemas
 │   ├── templates.py              # Template definitions
 │   └── utils.py                  # Utility functions
-├── main.py                       # Main entry point
 ├── pyproject.toml                # Project configuration and dependencies
 ├── uv.lock                       # Dependency lock file
 ├── .gitignore                    # Git ignore rules
