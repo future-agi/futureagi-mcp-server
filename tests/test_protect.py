@@ -1,7 +1,8 @@
-import pytest
 import json
+
+import pytest
+
 from src.server import mcp
-import asyncio
 
 
 @pytest.fixture
@@ -37,7 +38,6 @@ async def test_protect_toxic_content():
     response = await mcp.call_tool("protect", request)
     response_data = json.loads(response[0].text)
     assert response_data["status"] == "failed"
- 
 
 
 @pytest.mark.asyncio
@@ -54,7 +54,7 @@ async def test_protect_tone():
     response = await mcp.call_tool("protect", request)
     response_data = json.loads(response[0].text)
     assert response_data["status"] == "passed"
-    
+
 
 @pytest.mark.asyncio
 async def test_protect_data_privacy():
@@ -108,4 +108,3 @@ async def test_protect_no_rules():
     response = await mcp.call_tool("protect", request)
     response_data = json.loads(response[0].text)
     assert response_data["status"] == "error"
-

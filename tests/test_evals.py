@@ -1,8 +1,9 @@
-import pytest
 import json
-from src.server import mcp
-import asyncio
 import time
+
+import pytest
+
+from src.server import mcp
 
 
 @pytest.fixture
@@ -106,4 +107,3 @@ async def test_evaluate(batch_eval_request):
     else:
         response_data = json.loads(result.text)
         assert "eval_results" in response_data
-

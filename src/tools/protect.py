@@ -1,8 +1,9 @@
-from fi.evals import EvalClient
-from fi.evals import ProtectClient
-from typing import List, Dict
-from src.logger import get_logger
+from typing import Dict, List
+
+from fi.evals import EvalClient, ProtectClient
+
 from src.constants import DEFAULT_PROTECT_ACTION, DEFAULT_PROTECT_TIMEOUT
+from src.logger import get_logger
 from src.models import ProtectRule
 
 logger = get_logger()
@@ -73,7 +74,6 @@ def protect(
 
         status = result.get("status", "unknown")
         if status == "failed":
-            failed_rule = result.get("failed_rule", "unknown")
             if reason and "reason" in result:
                 result["messages"] = f"{action}. Reason: {result['reason']}"
             else:

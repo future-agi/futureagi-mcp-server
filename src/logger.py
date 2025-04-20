@@ -1,6 +1,7 @@
-import os
 import logging
-from src.constants import LOGS_DIR, LOG_FILE, LOG_LEVEL
+import os
+
+from src.constants import LOG_FILE, LOG_LEVEL, LOGS_DIR
 
 # Create logs directory if it doesn't exist
 os.makedirs(LOGS_DIR, exist_ok=True)

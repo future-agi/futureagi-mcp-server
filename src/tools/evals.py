@@ -1,14 +1,15 @@
-import os
 import json
+import os
 from typing import List
 
+from fi.api.auth import APIKeyAuth
+from fi.api.types import HttpMethod, RequestConfig
 from fi.evals import EvalClient
 from fi.evals.templates import EvalTemplate
-from fi.api.auth import APIKeyAuth
-from fi.api.types import RequestConfig, HttpMethod
-from src.models import Evaluation
 from fi.testcases import TestCase
+
 from src.logger import get_logger
+from src.models import Evaluation
 from src.tools.routes import Routes
 
 logger = get_logger()
@@ -24,7 +25,9 @@ def get_eval_structure(template_id: str):
         os.getenv("FI_API_KEY"), os.getenv("FI_SECRET_KEY"), os.getenv("FI_BASE_URL")
     )
     url = Routes.eval_structure(template_id)
-    config = RequestConfig(method=HttpMethod.POST, url=url, json={"eval_type": "preset"})
+    config = RequestConfig(
+        method=HttpMethod.POST, url=url, json={"eval_type": "preset"}
+    )
 
     try:
         response = request_handler.request(config)
@@ -111,7 +114,9 @@ def evaluate(eval_templates: List[Evaluation], inputs: List[TestCase]) -> dict:
         constructed_eval_templates = []
 
         for template_input in eval_templates:
-            current_eval_template = EvalTemplate(config=template_input.config.model_dump())
+            current_eval_template = EvalTemplate(
+                config=template_input.config.model_dump()
+            )
             current_eval_template.eval_id = template_input.eval_id
             constructed_eval_templates.append(current_eval_template)
 

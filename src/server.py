@@ -1,20 +1,21 @@
-import os
 import argparse
-import json
+import os
 import sys
+
 from mcp.server.fastmcp import FastMCP
-from src.logger import setup_logging, get_logger
-from src.constants import SERVER_HOST, SERVER_PORT, SERVER_NAME
+
+from src.constants import SERVER_HOST, SERVER_NAME, SERVER_PORT
+from src.logger import get_logger, setup_logging
+from src.tools.datasets import upload_dataset
 
 # Import tools from their respective modules
 from src.tools.evals import (
-    get_eval_structure,
-    get_evals_list_for_create_eval,
+    all_evaluators,
     create_eval,
     evaluate,
-    all_evaluators,
+    get_eval_structure,
+    get_evals_list_for_create_eval,
 )
-from src.tools.datasets import upload_dataset
 from src.tools.protect import protect
 from src.utils import setup_environment
 
@@ -53,9 +54,15 @@ def main():
         FI_BASE_URL: FutureAGI base URL (Required)
     """
     parser = argparse.ArgumentParser(description="FutureAGI MCP Server")
-    parser.add_argument("--api_key", type=str, required=False, default=os.getenv("FI_API_KEY"))
-    parser.add_argument("--secret_key", type=str, required=False, default=os.getenv("FI_SECRET_KEY"))
-    parser.add_argument("--base_url", type=str, required=False, default=os.getenv("FI_BASE_URL"))
+    parser.add_argument(
+        "--api_key", type=str, required=False, default=os.getenv("FI_API_KEY")
+    )
+    parser.add_argument(
+        "--secret_key", type=str, required=False, default=os.getenv("FI_SECRET_KEY")
+    )
+    parser.add_argument(
+        "--base_url", type=str, required=False, default=os.getenv("FI_BASE_URL")
+    )
 
     try:
         args = parser.parse_args()
