@@ -85,7 +85,7 @@ def add_evaluation_to_dataset(
     """Adds an evaluation column to a specified dataset and runs the evaluation.
     Fetch the eval structure from the eval_id and use it to add the evaluation to the dataset.
 
-    Use the required keys and deduce the input_column_name, output_column_name, context_column_name, expected_column_name.
+    Use the required keys and column names of the dataset to deduce the input_column_name, output_column_name, context_column_name, expected_column_name.
 
     Args:
         dataset_name (str): Name of the target dataset to which the evaluation will be added.
