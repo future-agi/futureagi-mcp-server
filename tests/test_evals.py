@@ -46,6 +46,21 @@ def batch_eval_request():
     }
 
 
+@pytest.fixture
+def batch_eval_request_with_config():
+    return {
+        "eval_templates": [
+            {"eval_id": "9", "config": {"config": {"check_internet": False}}}
+        ],
+        "inputs": [
+            {
+                "input": "What is the capital of France?",
+                "context": "Paris is the capital and largest city of France. Located on the Seine River in the northern part of the country, it is a major European city and a global center for art, fashion, gastronomy and culture.",
+            }
+        ],
+    }
+
+
 @pytest.mark.asyncio
 async def test_get_evals_list():
     """Test getting list of available evaluations"""
@@ -99,6 +114,20 @@ async def test_create_eval(eval_request):
 async def test_evaluate(batch_eval_request):
     """Test batch evaluation"""
     response = await mcp.call_tool("evaluate", batch_eval_request)
+    result = response[0]
+
+    if isinstance(result, str):
+        error_data = json.loads(result)
+        assert "error" in error_data
+    else:
+        response_data = json.loads(result.text)
+        assert "eval_results" in response_data
+
+
+@pytest.mark.asyncio
+async def test_batch_eval_with_config(batch_eval_request_with_config):
+    """Test batch evaluation with config"""
+    response = await mcp.call_tool("evaluate", batch_eval_request_with_config)
     result = response[0]
 
     if isinstance(result, str):

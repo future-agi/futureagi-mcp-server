@@ -6,7 +6,7 @@ from mcp.server.fastmcp import FastMCP
 
 from src.constants import SERVER_HOST, SERVER_NAME, SERVER_PORT
 from src.logger import get_logger, setup_logging
-from src.tools.datasets import upload_dataset
+from src.tools.datasets import add_evaluation_to_dataset, upload_dataset
 
 # Import tools from their respective modules
 from src.tools.evals import (
@@ -30,6 +30,7 @@ mcp.tool()(create_eval)
 mcp.tool()(evaluate)
 mcp.tool()(all_evaluators)
 mcp.tool()(upload_dataset)
+mcp.tool()(add_evaluation_to_dataset)
 mcp.tool()(protect)
 
 

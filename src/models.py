@@ -13,7 +13,7 @@ class EvalConfig(BaseModel):
     """
 
     criteria: Optional[str] = ""
-    config: Optional[dict] = {}
+    check_internet: Optional[bool] = False
     model: Optional[str] = ""
 
 

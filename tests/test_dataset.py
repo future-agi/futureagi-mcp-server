@@ -41,10 +41,6 @@ async def test_upload_dataset(sample_csv_file):
     response = await mcp.call_tool("upload_dataset", request_args)
     result = response[0]
 
-    print("result")
-    print(type(result))
-    print(result)
-
     # Handle both success and error cases
     if isinstance(result, str):
         # Error case - result is a JSON string
@@ -54,3 +50,30 @@ async def test_upload_dataset(sample_csv_file):
         # Success case - result is a dictionary
         assert isinstance(json.loads(result.text), dict)
         assert "dataset_id" in json.loads(result.text)
+
+
+@pytest.mark.asyncio
+async def test_add_evaluation_to_dataset():
+    """Test adding an evaluation to a dataset"""
+    request_args = {
+        "eval_id": "5",
+        "dataset_name": "rag_chat_eval_dataset",
+        "output_column_name": "response_best_model",
+        "context_column_name": "RAG_documents",
+        "name": "adherence_eval_final",
+        "run": True,
+    }
+
+    response = await mcp.call_tool("add_evaluation_to_dataset", request_args)
+    result = response[0]
+
+    # Handle both success and error cases
+    if isinstance(result, str):
+        # Error case - result is a JSON string
+        error_data = json.loads(result)
+        assert "error" in error_data
+    else:
+        # Success case - result is a dictionary
+        assert isinstance(json.loads(result.text), dict)
+        assert "status" in json.loads(result.text)
+        assert json.loads(result.text)["status"] == "success"
