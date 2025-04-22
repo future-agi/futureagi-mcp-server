@@ -12,13 +12,21 @@ logger = get_logger()
 
 
 def upload_dataset(dataset_name: str, model_type: str, source: str) -> dict:
-    """Upload a dataset to FutureAGI
+    """
+    This function is used to upload a dataset to FutureAGI.
+    If a source is provided, check if it is a valid absolute path.
+    If not, try finding the file in the current working directory.
+    If the file is not found, return an error.
+    If a source is not provided, create a new dataset.
 
     Args:
         dataset_name: Name of the dataset to create
         model_type: Type of model (e.g., "GenerativeLLM", "GenerativeImage")
         source: Optional source for the dataset. Can be:
             - A file path (str) for local files
+            - This should be the absolute path to the file
+            - If the user has not provided the absolute path, try finding the file in the current working directory
+            - If the file is not found, return an error
 
         Example:
         dataset_name = "my_dataset"
@@ -42,8 +50,10 @@ def upload_dataset(dataset_name: str, model_type: str, source: str) -> dict:
         result = None
         if source and os.path.exists(source):
             result = dataset_client.create(source=source)
-        else:
+        elif not source:
             result = dataset_client.create()
+        elif source and not os.path.exists(source):
+            return json.dumps({"error": f"File not found: {source}"})
 
         if result and result.dataset_config and result.dataset_config.id:
             return json.dumps(
@@ -83,7 +93,8 @@ def add_evaluation_to_dataset(
     config: Dict[str, Any] = {},
 ) -> dict:
     """Adds an evaluation column to a specified dataset and runs the evaluation.
-    Fetch the eval structure from the eval_id and use it to add the evaluation to the dataset.
+    Fetch the eval structure from the eval_id NOT the UUID this is important.
+    Eval id is the integer string of the eval template. Can find it in the output of the all_evaluators tool.
 
     Use the required keys and column names of the dataset to deduce the input_column_name, output_column_name, context_column_name, expected_column_name.
 

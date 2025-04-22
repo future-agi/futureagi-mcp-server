@@ -17,14 +17,15 @@ def protect(
     timeout: int = DEFAULT_PROTECT_TIMEOUT,
 ) -> Dict:
     """
-    Evaluate input strings against protection rules.
+    Protect input strings against harmful content using a list of protection rules.
+    Do not use this tool for evaluating content. Use the evaluate tool for that.
 
     Args:
         inputs: Single string to evaluate. Can be text, image file path/URL, or audio file path/URL
-        protect_rules: List of protection rule objects adhering to ProtectRule model.
-            Each rule must contain:
+        protect_rules: List of protection rule dictionaries. Each rule must contain:
             - metric: str, name of the metric to evaluate ('Toxicity', 'Tone', 'Sexism', 'Prompt Injection', 'Data Privacy')
-            - contains: List[str], required for Tone metric only.
+            - contains: List[str], required for Tone metric only. Possible values: neutral, joy, love, fear, surprise,
+                       sadness, anger, annoyance, confusion
             - type: str, required for Tone metric only. Either 'any' (default) or 'all'
         action: Default action message when rules fail. Defaults to DEFAULT_PROTECT_ACTION
         reason: Whether to include failure reason in output. Defaults to False
