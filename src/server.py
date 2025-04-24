@@ -310,27 +310,7 @@ def get_server(
             elif name == "add_evaluation_to_dataset":
                 result = await add_evaluation_to_dataset(**arguments)
             elif name == "protect":
-                # Ensure protect_rules is properly formatted
-                parsed_rules = arguments.get("protect_rules", [])
-                if isinstance(parsed_rules, str):
-                    try:
-                        parsed_rules = json.loads(parsed_rules)
-                    except json.JSONDecodeError:
-                        logger.error(
-                            f"Invalid JSON format for protect_rules: {parsed_rules}"
-                        )
-                        parsed_rules = [{"metric": parsed_rules}]  # Fallback attempt
-                elif not isinstance(parsed_rules, list):
-                    parsed_rules = [parsed_rules]  # Wrap if single dict
-
-                # Explicitly pass known arguments to protect
-                result = await protect(
-                    inputs=arguments.get("inputs", ""),
-                    protect_rules=parsed_rules,
-                    action=arguments.get("action"),  # Let protect handle default
-                    reason=arguments.get("reason"),  # Let protect handle default
-                    timeout=arguments.get("timeout"),  # Let protect handle default
-                )
+                result = await protect(**arguments)
             else:
                 logger.warning(f"Unknown tool name received: {name}")
                 return [
