@@ -4,7 +4,7 @@ import mcp.types as types
 from mcp.server import Server
 
 from src.constants import SERVER_NAME
-from src.logger import get_logger, setup_logging
+from src.logger import get_logger
 
 # Import tool descriptions
 from src.tools.datasets import (
@@ -30,11 +30,10 @@ from src.tools.evals import (
 from src.tools.protect import PROTECT_DESCRIPTION, protect
 from src.utils import setup_environment
 
-setup_logging()
 logger = get_logger()
 
 
-def serve(
+def get_server(
     api_key: str,
     secret_key: str,
     base_url: str,
@@ -311,10 +310,32 @@ def serve(
             elif name == "add_evaluation_to_dataset":
                 result = await add_evaluation_to_dataset(**arguments)
             elif name == "protect":
-                result = await protect(**arguments)
+                # Ensure protect_rules is properly formatted
+                parsed_rules = arguments.get("protect_rules", [])
+                if isinstance(parsed_rules, str):
+                    try:
+                        parsed_rules = json.loads(parsed_rules)
+                    except json.JSONDecodeError:
+                        logger.error(
+                            f"Invalid JSON format for protect_rules: {parsed_rules}"
+                        )
+                        parsed_rules = [{"metric": parsed_rules}]  # Fallback attempt
+                elif not isinstance(parsed_rules, list):
+                    parsed_rules = [parsed_rules]  # Wrap if single dict
+
+                # Explicitly pass known arguments to protect
+                result = await protect(
+                    inputs=arguments.get("inputs", ""),
+                    protect_rules=parsed_rules,
+                    action=arguments.get("action"),  # Let protect handle default
+                    reason=arguments.get("reason"),  # Let protect handle default
+                    timeout=arguments.get("timeout"),  # Let protect handle default
+                )
             else:
                 logger.warning(f"Unknown tool name received: {name}")
-                return [types.TextContent(f"Unknown tool name: {name}")]
+                return [
+                    types.TextContent(text=f"Unknown tool name: {name}", type="text")
+                ]
 
             # Process and return the result
             if isinstance(result, dict):
@@ -325,12 +346,16 @@ def serve(
                 result_str = str(result)
 
             logger.info(f"Tool {name} executed successfully. Result: {result_str}")
-            return [types.TextContent(result_str)]
+            return [types.TextContent(text=result_str, type="text")]
         except Exception as e:
             logger.error(
                 f"Error executing tool {name} with args {arguments}: {str(e)}",
                 exc_info=True,
             )
-            return [types.TextContent(f"Error executing tool {name}: {str(e)}")]
+            return [
+                types.TextContent(
+                    text=f"Error executing tool {name}: {str(e)}", type="text"
+                )
+            ]
 
     return server

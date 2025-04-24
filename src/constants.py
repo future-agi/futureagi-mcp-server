@@ -7,7 +7,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Logging configuration
 LOGS_DIR = os.path.join(BASE_DIR, "logs")
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "ERROR")
 LOG_FILE = os.path.join(LOGS_DIR, "futureagi-mcp.log")
 
 

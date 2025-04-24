@@ -6,9 +6,10 @@ from mcp.server import NotificationOptions
 from mcp.server.models import InitializationOptions
 
 from src.constants import SERVER_NAME, SERVER_VERSION
-from src.logger import get_logger
-from src.server import serve
+from src.logger import get_logger, setup_logging
+from src.server import get_server
 
+setup_logging()
 logger = get_logger()
 
 
@@ -44,7 +45,7 @@ def main(
         # Use stdio_server context manager
         async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
             # Get the server instance from serve()
-            server = serve(
+            server = get_server(
                 api_key=api_key,
                 secret_key=secret_key,
                 base_url=base_url,
@@ -67,6 +68,7 @@ def main(
                 init_options,
             )
 
+    logger.info("Running server...", flush=True)
     # Run the async function
     asyncio.run(_run())
 
