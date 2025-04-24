@@ -27,6 +27,7 @@ UPLOAD_DATASET_DESCRIPTION = """
        - If no source, initialize empty dataset structure
        - Apply any specified dataset configurations
 
+    If the error says "Dataset already exists" then return the following retry with a different dataset name
 
     Args:
         dataset_name: Name of the dataset to create
@@ -46,11 +47,30 @@ UPLOAD_DATASET_DESCRIPTION = """
         dict: Dataset configuration including ID and name
     """
 
-ADD_EVALUATION_TO_DATASET_DESCRIPTION = """Adds an evaluation column to a specified dataset and runs the evaluation.
-    Fetch the eval structure from the eval_id NOT the UUID this is important.
-    Eval id is the integer string of the eval template. Can find it in the output of the all_evaluators tool.
+ADD_EVALUATION_TO_DATASET_DESCRIPTION = """
 
-    Use the required keys and column names of the dataset to deduce the input_column_name, output_column_name, context_column_name, expected_column_name.
+    Adds an evaluation column to a specified dataset and runs the evaluation.
+
+    Please follow these steps strictly before calling this function:
+    1. Validate eval_id format:
+       - Ensure eval_id is an integer string (e.g. '1', '9', '11')
+       - Do NOT use UUID format
+       - Verify eval_id exists in all_evaluators output
+    2. Fetch evaluation structure:
+       - Get eval template structure using template_id which is the UUID of the eval template
+       - Extract required column types from template
+    3. Dataset column validation:
+       - Use the filesystem tools to read the columns of the dataset
+       - Map dataset columns to template requirements:
+         * input_column_name -> Template input field
+         * output_column_name -> Template output/response field
+         * context_column_name -> Template context field
+         * expected_column_name -> Template expected field
+       - Verify column data types match template requirements
+    4. Column name deduction:
+       - Use dataset schema to automatically identify matching columns
+       - Follow naming conventions (input, output, context, expected)
+       - Validate deduced column mappings against template
 
     Args:
         dataset_name (str): Name of the target dataset to which the evaluation will be added.
@@ -67,6 +87,30 @@ ADD_EVALUATION_TO_DATASET_DESCRIPTION = """Adds an evaluation column to a specif
     Returns:
         dict: A dictionary indicating the success or failure of the operation, with relevant status messages.
     """
+
+DOWNLOAD_DATASET_AND_FIND_THE_INSIGHTS_DESCRIPTION = """
+    This function is used to download a dataset from FutureAGI and find the insights.
+    It will return a dictionary with the dataset name, the file path, and the insights.
+
+    Please follow these steps strictly before calling this function:
+    1. Validate dataset_name format:
+       - Ensure dataset_name is a string
+       - Verify dataset_name exists in FutureAGI
+    2. Validate file_path format:
+       - Ensure file_path is a string
+       - Verify file_path is a valid path
+       - If the Obsolute path is not provided, add the current working directory to the file_path
+
+    After downloading the dataset, find the insights of the column and return the insights.
+
+    Args:
+        dataset_name (str): Name of the dataset to download
+        file_path (str): Path to save the downloaded dataset
+
+    Returns:
+        Status: success or error
+        Message: File path of the downloaded dataset
+"""
 
 
 async def upload_dataset(dataset_name: str, model_type: str, source: str) -> dict:
@@ -207,6 +251,31 @@ async def add_evaluation_to_dataset(
     except Exception as e:
         logger.error(
             f"An unexpected error occurred while adding evaluation to dataset {dataset_name}: {e}",
+            exc_info=True,
+        )
+        return {"status": "error", "message": f"An unexpected error occurred: {str(e)}"}
+
+
+async def download_dataset_and_find_the_insights(
+    dataset_name: str, file_path: str
+) -> dict:
+    """
+    Downloads a dataset from FutureAGI and saves it to a local file.
+    """
+    try:
+        dataset_client = DatasetClient(
+            dataset_config=DatasetConfig(
+                name=dataset_name, model_type=ModelTypes.GENERATIVE_LLM
+            ),
+        )
+        dataset_client.download(file_path=file_path)
+        return {
+            "status": "success",
+            "message": f"Dataset {dataset_name} downloaded to {file_path}",
+        }
+    except Exception as e:
+        logger.error(
+            f"An unexpected error occurred while downloading dataset {dataset_name}: {e}",
             exc_info=True,
         )
         return {"status": "error", "message": f"An unexpected error occurred: {str(e)}"}

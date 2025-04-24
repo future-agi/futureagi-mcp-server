@@ -9,8 +9,10 @@ from src.logger import get_logger
 # Import tool descriptions
 from src.tools.datasets import (
     ADD_EVALUATION_TO_DATASET_DESCRIPTION,
+    DOWNLOAD_DATASET_AND_FIND_THE_INSIGHTS_DESCRIPTION,
     UPLOAD_DATASET_DESCRIPTION,
     add_evaluation_to_dataset,
+    download_dataset_and_find_the_insights,
     upload_dataset,
 )
 
@@ -281,6 +283,24 @@ def get_server(
                     "required": ["inputs", "protect_rules"],
                 },
             ),
+            types.Tool(
+                name="download_dataset_and_find_the_insights",
+                description=DOWNLOAD_DATASET_AND_FIND_THE_INSIGHTS_DESCRIPTION,
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "dataset_name": {
+                            "type": "string",
+                            "description": "Name of the dataset to download",
+                        },
+                        "file_path": {
+                            "type": "string",
+                            "description": "Path to save the downloaded dataset",
+                        },
+                    },
+                    "required": ["dataset_name", "file_path"],
+                },
+            ),
         ]
 
     @server.call_tool()
@@ -311,6 +331,8 @@ def get_server(
                 result = await add_evaluation_to_dataset(**arguments)
             elif name == "protect":
                 result = await protect(**arguments)
+            elif name == "download_dataset_and_find_the_insights":
+                result = await download_dataset_and_find_the_insights(**arguments)
             else:
                 logger.warning(f"Unknown tool name received: {name}")
                 return [
