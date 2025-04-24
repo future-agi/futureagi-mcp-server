@@ -1,9 +1,33 @@
-import json
+import os
 import time
 
 import pytest
+import pytest_asyncio
 
-from src.server import mcp
+# Import tool functions directly
+from src.tools.evals import (
+    create_eval,
+    evaluate,
+    get_eval_structure,
+    get_evals_list_for_create_eval,
+)
+from src.utils import setup_environment
+
+
+@pytest_asyncio.fixture(scope="module", autouse=True)
+def setup_env():
+    """Set up environment variables for tests."""
+    # Ensure required env vars are present for the actual API calls
+    api_key = os.getenv("FI_API_KEY")
+    secret_key = os.getenv("FI_SECRET_KEY")
+    base_url = os.getenv(
+        "FI_BASE_URL", "https://api.futureagi.com"
+    )  # Default if not set
+    if not api_key or not secret_key:
+        pytest.skip(
+            "FI_API_KEY and FI_SECRET_KEY environment variables must be set to run integration tests."
+        )
+    setup_environment(api_key, secret_key, base_url)
 
 
 @pytest.fixture
@@ -64,75 +88,56 @@ def batch_eval_request_with_config():
 @pytest.mark.asyncio
 async def test_get_evals_list():
     """Test getting list of available evaluations"""
-    response = await mcp.call_tool(
-        "get_evals_list_for_create_eval", {"eval_type": "preset"}
-    )
-    result = response[0]
+    # Call function directly
+    response_data = await get_evals_list_for_create_eval(eval_type="preset")
 
-    if isinstance(result, str):
-        error_data = json.loads(result)
-        assert "error" in error_data
-    else:
-        response_data = json.loads(result.text)
-        assert "status" in response_data
-        assert isinstance(response_data.get("result"), dict)
-        assert isinstance(response_data.get("result").get("evals"), list)
+    # Assert directly on the returned dict
+    assert "status" in response_data
+    assert isinstance(response_data.get("result"), dict)
+    assert isinstance(response_data.get("result").get("evals"), list)
 
 
 @pytest.mark.asyncio
 async def test_get_eval_structure():
     """Test getting evaluation structure"""
     template_id = "fbb17917-54af-4b73-ba42-7ec183e74b48"
-    response = await mcp.call_tool("get_eval_structure", {"template_id": template_id})
-    result = response[0]
-    if isinstance(result, str):
-        error_data = json.loads(result)
-        assert "error" in error_data
-    else:
-        response_data = json.loads(result.text)
-        print("*" * 100)
-        print(response_data)
-        print("*" * 100)
-        assert "status" in response_data
+    # Call function directly
+    response_data = await get_eval_structure(template_id=template_id)
+
+    # Assert directly on the returned dict
+    print("*" * 100)
+    print(response_data)
+    print("*" * 100)
+    assert "status" in response_data
 
 
 @pytest.mark.asyncio
 async def test_create_eval(eval_request):
     """Test creating an evaluation"""
-    response = await mcp.call_tool("create_eval", eval_request)
-    result = response[0]
+    # Call function directly, unpacking the fixture dict
+    response_data = await create_eval(**eval_request)
 
-    if isinstance(result, str):
-        error_data = json.loads(result)
-        assert "error" in error_data
-    else:
-        response_data = json.loads(result.text)
-        assert "status" in response_data
+    # Assert directly on the returned dict
+    assert "status" in response_data
 
 
 @pytest.mark.asyncio
 async def test_evaluate(batch_eval_request):
     """Test batch evaluation"""
-    response = await mcp.call_tool("evaluate", batch_eval_request)
-    result = response[0]
+    # Call function directly, unpacking the fixture dict
+    response_data = await evaluate(**batch_eval_request)
 
-    if isinstance(result, str):
-        error_data = json.loads(result)
-        assert "error" in error_data
-    else:
-        response_data = json.loads(result.text)
-        assert "eval_results" in response_data
+    # Assert directly on the returned list/dict (adjust based on actual return type)
+    # Assuming evaluate returns a dict with 'eval_results'
+    assert "eval_results" in response_data
 
 
 @pytest.mark.asyncio
 async def test_batch_eval_with_config(batch_eval_request_with_config):
     """Test batch evaluation with config"""
-    response = await mcp.call_tool("evaluate", batch_eval_request_with_config)
-    result = response[0]
+    # Call function directly, unpacking the fixture dict
+    response_data = await evaluate(**batch_eval_request_with_config)
 
-    if isinstance(result, str):
-        error_data = json.loads(result)
-        assert "error" in error_data
-    else:
-        response_data = json.loads(result.text)
-        assert "eval_results" in response_data
+    # Assert directly on the returned list/dict
+    # Assuming evaluate returns a dict with 'eval_results'
+    assert "eval_results" in response_data

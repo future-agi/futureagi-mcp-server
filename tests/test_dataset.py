@@ -1,17 +1,17 @@
 import csv
-import json
 import os
 import tempfile
-import time
+import uuid
 
 import pytest
 
-from src.server import mcp
+from src.tools.datasets import add_evaluation_to_dataset, upload_dataset
 
 
 @pytest.fixture
 def sample_csv_file():
     """Create a temporary CSV file for testing"""
+    # Need os imported for unlink
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".csv") as tmp:
         writer = csv.writer(tmp)
         writer.writerow(["input", "output", "context"])
@@ -27,53 +27,62 @@ def sample_csv_file():
 
     yield tmp_path
     # Cleanup after test
-    os.unlink(tmp_path)
+    try:
+        os.unlink(tmp_path)  # os.unlink needs os imported
+    except FileNotFoundError:
+        pass
 
 
 @pytest.mark.asyncio
 async def test_upload_dataset(sample_csv_file):
     """Test uploading a dataset from CSV file"""
+    dataset_name = f"test_dataset_{uuid.uuid4()}"
     request_args = {
-        "dataset_name": "test_dataset" + str(time.time()),
+        "dataset_name": dataset_name,
         "model_type": "GenerativeLLM",
         "source": sample_csv_file,
     }
-    response = await mcp.call_tool("upload_dataset", request_args)
-    result = response[0]
+    response_data = await upload_dataset(**request_args)
 
-    # Handle both success and error cases
-    if isinstance(result, str):
-        # Error case - result is a JSON string
-        error_data = json.loads(result)
-        assert "error" in error_data
-    else:
-        # Success case - result is a dictionary
-        assert isinstance(json.loads(result.text), dict)
-        assert "dataset_id" in json.loads(result.text)
+    assert isinstance(response_data, dict)
+    if response_data.get("status") == "error":
+        pytest.fail(f"Upload failed: {response_data.get('error', 'Unknown error')}")
+
+    assert response_data.get("status") == "success"
+    assert "dataset_id" in response_data
 
 
 @pytest.mark.asyncio
-async def test_add_evaluation_to_dataset():
+async def test_add_evaluation_to_dataset(sample_csv_file):
     """Test adding an evaluation to a dataset"""
+
+    dataset_name = f"test_ds_for_eval_{uuid.uuid4()}"
+    upload_args = {
+        "dataset_name": dataset_name,
+        "model_type": "GenerativeLLM",
+        "source": sample_csv_file,
+    }
+    upload_response = await upload_dataset(**upload_args)
+    assert isinstance(upload_response, dict)
+    assert (
+        upload_response.get("status") == "success"
+    ), f"Prerequisite dataset upload failed: {upload_response.get('error')}"
+
     request_args = {
         "eval_id": "5",
-        "dataset_name": "rag_chat_eval_dataset",
-        "output_column_name": "response_best_model",
-        "context_column_name": "RAG_documents",
-        "name": "adherence_eval_final",
-        "run": True,
+        "dataset_name": dataset_name,
+        "output_column_name": "output",
+        "context_column_name": "context",
+        "name": "adherence_eval_test",
     }
 
-    response = await mcp.call_tool("add_evaluation_to_dataset", request_args)
-    result = response[0]
+    response_data = await add_evaluation_to_dataset(**request_args)
 
-    # Handle both success and error cases
-    if isinstance(result, str):
-        # Error case - result is a JSON string
-        error_data = json.loads(result)
-        assert "error" in error_data
-    else:
-        # Success case - result is a dictionary
-        assert isinstance(json.loads(result.text), dict)
-        assert "status" in json.loads(result.text)
-        assert json.loads(result.text)["status"] == "success"
+    assert isinstance(response_data, dict)
+    if response_data.get("status") == "error":
+        pytest.fail(
+            f"Add evaluation failed: {response_data.get('error', 'Unknown error')}"
+        )
+
+    assert "status" in response_data
+    assert response_data["status"] != "error"

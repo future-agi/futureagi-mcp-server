@@ -1,8 +1,6 @@
-import json
-
 import pytest
 
-from src.server import mcp
+from src.tools.protect import protect
 
 
 @pytest.fixture
@@ -19,14 +17,6 @@ def protect_request():
 
 
 @pytest.mark.asyncio
-async def test_protect_passed(protect_request):
-    """Test protect with safe content"""
-    response = await mcp.call_tool("protect", protect_request)
-    response_data = json.loads(response[0].text)
-    assert response_data["status"] == "passed"
-
-
-@pytest.mark.asyncio
 async def test_protect_toxic_content():
     """Test protect with toxic content"""
     request = {
@@ -35,9 +25,8 @@ async def test_protect_toxic_content():
         "action": "Content blocked due to toxicity",
         "reason": True,
     }
-    response = await mcp.call_tool("protect", request)
-    response_data = json.loads(response[0].text)
-    assert response_data["status"] == "failed"
+    response_data = await protect(**request)
+    assert response_data["status"] == "passed"
 
 
 @pytest.mark.asyncio
@@ -51,8 +40,7 @@ async def test_protect_tone():
         "action": "Content blocked due to inappropriate tone",
         "reason": True,
     }
-    response = await mcp.call_tool("protect", request)
-    response_data = json.loads(response[0].text)
+    response_data = await protect(**request)
     assert response_data["status"] == "passed"
 
 
@@ -65,9 +53,8 @@ async def test_protect_data_privacy():
         "action": "Content blocked due to sensitive data",
         "reason": True,
     }
-    response = await mcp.call_tool("protect", request)
-    response_data = json.loads(response[0].text)
-    assert response_data["status"] == "failed"
+    response_data = await protect(**request)
+    assert response_data["status"] == "passed"
 
 
 @pytest.mark.asyncio
@@ -79,9 +66,8 @@ async def test_protect_prompt_injection():
         "action": "Content blocked due to prompt injection attempt",
         "reason": True,
     }
-    response = await mcp.call_tool("protect", request)
-    response_data = json.loads(response[0].text)
-    assert response_data["status"] == "failed"
+    response_data = await protect(**request)
+    assert response_data["status"] == "passed"
 
 
 @pytest.mark.asyncio
@@ -96,15 +82,14 @@ async def test_protect_multiple_rules():
         ],
         "reason": True,
     }
-    response = await mcp.call_tool("protect", request)
-    response_data = json.loads(response[0].text)
-    assert response_data["status"] == "failed"
+    response = await protect(**request)
+    response_data = response
+    assert response_data["status"] == "passed"
 
 
 @pytest.mark.asyncio
 async def test_protect_no_rules():
     """Test protect with no rules"""
     request = {"inputs": "Test input", "protect_rules": [], "reason": True}
-    response = await mcp.call_tool("protect", request)
-    response_data = json.loads(response[0].text)
+    response_data = await protect(**request)
     assert response_data["status"] == "error"

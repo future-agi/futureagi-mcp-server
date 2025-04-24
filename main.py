@@ -1,0 +1,83 @@
+import asyncio
+import logging
+import sys
+
+import click
+import mcp
+from mcp.server import NotificationOptions
+from mcp.server.models import InitializationOptions
+
+from src.constants import SERVER_NAME, SERVER_VERSION
+from src.server import serve
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    stream=sys.stderr,
+)
+logger = logging.getLogger(__name__)
+
+
+@click.command()
+@click.option(
+    "--api-key",
+    envvar="FI_API_KEY",
+    required=True,
+    help="FutureAGI API key",
+)
+@click.option(
+    "--secret-key",
+    envvar="FI_SECRET_KEY",
+    required=True,
+    help="FutureAGI secret key",
+)
+@click.option(
+    "--base-url",
+    envvar="FI_BASE_URL",
+    default="https://api.futureagi.com",
+    help="FutureAGI API base URL",
+)
+def main(
+    api_key: str,
+    secret_key: str,
+    base_url: str,
+):
+    """Start the FutureAGI MCP server using stdio."""
+
+    async def _run():
+        logger.debug("Starting server via stdio...")
+
+        # Use stdio_server context manager
+        async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+            # Get the server instance from serve()
+            server = serve(
+                api_key=api_key,
+                secret_key=secret_key,
+                base_url=base_url,
+            )
+
+            # Define initialization options
+            init_options = InitializationOptions(
+                server_name=SERVER_NAME,
+                server_version=SERVER_VERSION,
+                capabilities=server.get_capabilities(
+                    notification_options=NotificationOptions(),
+                    experimental_capabilities={},
+                ),
+            )
+
+            # Run the server
+            await server.run(
+                read_stream,
+                write_stream,
+                init_options,
+            )
+
+    # Run the async function
+    asyncio.run(_run())
+
+
+if __name__ == "__main__":
+    print("Running main...", flush=True)
+    main()

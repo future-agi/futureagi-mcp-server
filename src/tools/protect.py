@@ -4,14 +4,39 @@ from fi.evals import EvalClient, ProtectClient
 
 from src.constants import DEFAULT_PROTECT_ACTION, DEFAULT_PROTECT_TIMEOUT
 from src.logger import get_logger
-from src.models import ProtectRule
 
 logger = get_logger()
 
+PROTECT_DESCRIPTION = """
+    Protect input strings against harmful content using a list of protection rules.
+    Do not use this tool for evaluating content. Use the evaluate tool for that.
 
-def protect(
+    Args:
+        inputs: Single string to evaluate. Can be text, image file path/URL, or audio file path/URL
+        protect_rules: List of protection rule dictionaries. Each rule must contain:
+            - metric: str, name of the metric to evaluate ('Toxicity', 'Tone', 'Sexism', 'Prompt Injection', 'Data Privacy')
+            - contains: List[str], required for Tone metric only. Possible values: neutral, joy, love, fear, surprise,
+                       sadness, anger, annoyance, confusion
+            - type: str, required for Tone metric only. Either 'any' (default) or 'all'
+        action: Default action message when rules fail. Defaults to DEFAULT_PROTECT_ACTION
+        reason: Whether to include failure reason in output. Defaults to False
+        timeout: Timeout for evaluations in milliseconds. Defaults to DEFAULT_PROTECT_TIMEOUT
+
+    Returns:
+        Dict with protection results containing:
+            - status: 'passed' or 'failed'
+            - messages: Action message if failed, original input if passed
+            - completed_rules: List of rules that were evaluated
+            - uncompleted_rules: List of rules not evaluated due to failure/timeout
+            - failed_rule: Name of failed rule, or None if passed
+            - reason: Explanation for failure if reason=True
+            - time_taken: Total evaluation duration
+    """
+
+
+async def protect(
     inputs: str,
-    protect_rules: List[ProtectRule],
+    protect_rules: List[Dict],
     action: str = DEFAULT_PROTECT_ACTION,
     reason: bool = False,
     timeout: int = DEFAULT_PROTECT_TIMEOUT,
@@ -51,7 +76,7 @@ def protect(
         # Clean up rules before passing to protect_client
         cleaned_rules = []
         for rule in protect_rules:
-            rule_dict = rule.model_dump()
+            rule_dict = rule
             if rule_dict["metric"] == "Tone":
                 # For Tone metric, keep metric, contains, and type
                 cleaned_rule = {

@@ -15,6 +15,7 @@ LOG_FILE = os.path.join(LOGS_DIR, "futureagi-mcp.log")
 SERVER_HOST = "0.0.0.0"
 SERVER_PORT = 8001
 SERVER_NAME = "futureagi"
+SERVER_VERSION = "0.1.0"
 
 # Model Hub configuration
 MODEL_HUB_DEVELOP_ID = "2063cf96-40fc-4840-b5cd-ce48f06c24ea"
