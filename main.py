@@ -1,6 +1,4 @@
 import asyncio
-import logging
-import sys
 
 import click
 import mcp
@@ -8,15 +6,10 @@ from mcp.server import NotificationOptions
 from mcp.server.models import InitializationOptions
 
 from src.constants import SERVER_NAME, SERVER_VERSION
+from src.logger import get_logger
 from src.server import serve
 
-# Configure logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    stream=sys.stderr,
-)
-logger = logging.getLogger(__name__)
+logger = get_logger()
 
 
 @click.command()

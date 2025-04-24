@@ -304,8 +304,9 @@ def serve(
             elif name == "evaluate":
                 result = await evaluate(**arguments)
             elif name == "all_evaluators":
-                result = await all_evaluators()  # Assuming no args needed
+                result = await all_evaluators()
             elif name == "upload_dataset":
+                logger.info(f"Uploading dataset {arguments}")
                 result = await upload_dataset(**arguments)
             elif name == "add_evaluation_to_dataset":
                 result = await add_evaluation_to_dataset(**arguments)

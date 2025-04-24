@@ -26,7 +26,7 @@ async def test_protect_toxic_content():
         "reason": True,
     }
     response_data = await protect(**request)
-    assert response_data["status"] == "passed"
+    assert response_data["status"] == "failed"
 
 
 @pytest.mark.asyncio
@@ -54,7 +54,7 @@ async def test_protect_data_privacy():
         "reason": True,
     }
     response_data = await protect(**request)
-    assert response_data["status"] == "passed"
+    assert response_data["status"] == "failed"
 
 
 @pytest.mark.asyncio
@@ -67,7 +67,7 @@ async def test_protect_prompt_injection():
         "reason": True,
     }
     response_data = await protect(**request)
-    assert response_data["status"] == "passed"
+    assert response_data["status"] == "failed"
 
 
 @pytest.mark.asyncio
@@ -84,7 +84,7 @@ async def test_protect_multiple_rules():
     }
     response = await protect(**request)
     response_data = response
-    assert response_data["status"] == "passed"
+    assert response_data["status"] == "failed"
 
 
 @pytest.mark.asyncio

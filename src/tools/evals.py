@@ -9,7 +9,6 @@ from fi.evals.templates import EvalTemplate
 from fi.testcases import TestCase
 
 from src.logger import get_logger
-from src.models import Evaluation
 from src.tools.routes import Routes
 
 logger = get_logger()
@@ -273,7 +272,7 @@ async def create_eval(eval_name: str, template_id: str, config: dict) -> dict:
         return json.dumps({"error": str(e)})
 
 
-async def evaluate(eval_templates: List[Evaluation], inputs: List[TestCase]) -> dict:
+async def evaluate(eval_templates: List[dict], inputs: List[dict]) -> dict:
     """
     First Fetch the all the evaluators using the all_evaluators tool.
     Then find the eval_id from the all_evaluators list.
@@ -388,11 +387,13 @@ async def all_evaluators() -> dict:
         dict: Dictionary containing all evaluator configurations
     """
     try:
+        logger.info("Fetching evaluators")
         eval_client = EvalClient()
         evaluators = eval_client.list_evaluations()
         evaluators.sort(
             key=lambda x: x["eval_tags"] and "CUSTOM" in x["eval_tags"], reverse=True
         )
+        logger.info(f"Evaluators: {evaluators}")
         return json.dumps(evaluators)
     except Exception as e:
         logger.error(f"Failed to fetch evaluators: {str(e)}", exc_info=True)

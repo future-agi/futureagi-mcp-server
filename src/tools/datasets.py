@@ -11,11 +11,22 @@ logger = get_logger()
 
 
 UPLOAD_DATASET_DESCRIPTION = """
-    This function is used to upload a dataset to FutureAGI.
-    If a source is provided, check if it is a valid absolute path.
-    If not, try finding the file in the current working directory.
-    If the file is not found, return an error.
-    If a source is not provided, create a new dataset.
+    This function should be used to upload a dataset to FutureAGI by either:
+
+    Please follow these steps strictly before calling this function:
+    1. Validate source file path:
+       - Check if provided path is absolute using file system tools
+       - If relative path, resolve against current working directory
+       - Verify file exists and is readable
+       - Return error if file not found or inaccessible
+    2. File format validation:
+       - Ensure file has supported extension (.csv, .json, etc.)
+       - Validate file structure and contents
+    3. Dataset creation:
+       - If source file provided, use it to create dataset
+       - If no source, initialize empty dataset structure
+       - Apply any specified dataset configurations
+
 
     Args:
         dataset_name: Name of the dataset to create
@@ -26,7 +37,7 @@ UPLOAD_DATASET_DESCRIPTION = """
             - If the user has not provided the absolute path, try finding the file in the current working directory
             - If the file is not found, return an error
 
-        Example:
+    Example:
         dataset_name = "my_dataset"
         model_type = "GenerativeLLM"
         source = "/Users/name/Downloads/test.csv"

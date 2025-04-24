@@ -72,38 +72,19 @@ async def protect(
 
         # Convert timeout from milliseconds to microseconds for the client
         client_timeout = timeout * 1000
-
-        # Clean up rules before passing to protect_client
-        cleaned_rules = []
-        for rule in protect_rules:
-            rule_dict = rule
-            if rule_dict["metric"] == "Tone":
-                # For Tone metric, keep metric, contains, and type
-                cleaned_rule = {
-                    "metric": rule_dict["metric"],
-                    "contains": rule_dict["contains"],
-                }
-                if rule_dict.get("type"):
-                    cleaned_rule["type"] = rule_dict["type"]
-            else:
-                # For non-Tone metrics, only keep metric
-                cleaned_rule = {"metric": rule_dict["metric"]}
-            cleaned_rules.append(cleaned_rule)
-
+        print(f"Protecting inputs: {inputs}")
+        print(f"Protect rules: {protect_rules}")
+        print(f"Action: {action}")
+        print(f"Reason: {reason}")
+        print(f"Timeout: {client_timeout}")
         result = protect_client.protect(
             inputs=inputs,
-            protect_rules=cleaned_rules,
+            protect_rules=protect_rules,
             action=action,
             reason=reason,
             timeout=client_timeout,
         )
-
-        status = result.get("status", "unknown")
-        if status == "failed":
-            if reason and "reason" in result:
-                result["messages"] = f"{action}. Reason: {result['reason']}"
-            else:
-                result["messages"] = action
+        print(f"Protection result: {result}")
 
         return result
     except Exception as e:
