@@ -56,9 +56,18 @@ python src/server.py
 futureagi-mcp-server/
 ├── src/                          # Source code directory
 │   ├── server.py                 # Main server implementation
-│   ├── models.py                 # Data models and schemas
-│   ├── templates.py              # Template definitions
-│   └── utils.py                  # Utility functions
+│   ├── utils.py                  # Utility functions
+│   ├── constants.py              # Constants and configuration
+│   ├── logger.py                 # Logging configuration
+│   └── tools/                    # Tools directory
+│       ├── evals.py              # Evaluation tools
+│       ├── datasets.py           # Dataset tools
+│       ├── protect.py            # Protection tools
+│       └── routes.py             # Route management
+├── tests/                        # Test directory
+│   ├── test_dataset.py           # Dataset tests
+│   ├── test_protect.py           # Protection tests
+│   └── test_evals.py             # Evaluation tests
 ├── pyproject.toml                # Project configuration and dependencies
 ├── uv.lock                       # Dependency lock file
 ├── .gitignore                    # Git ignore rules

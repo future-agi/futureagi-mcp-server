@@ -72,11 +72,6 @@ async def protect(
 
         # Convert timeout from milliseconds to microseconds for the client
         client_timeout = timeout * 1000
-        print(f"Protecting inputs: {inputs}")
-        print(f"Protect rules: {protect_rules}")
-        print(f"Action: {action}")
-        print(f"Reason: {reason}")
-        print(f"Timeout: {client_timeout}")
         result = protect_client.protect(
             inputs=inputs,
             protect_rules=protect_rules,
@@ -84,7 +79,6 @@ async def protect(
             reason=reason,
             timeout=client_timeout,
         )
-        print(f"Protection result: {result}")
 
         return result
     except Exception as e:

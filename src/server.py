@@ -157,13 +157,17 @@ def get_server(
                         "model_type": {
                             "type": "string",
                             "description": "Type of model (e.g., 'GenerativeLLM', 'GenerativeImage')",
+                            "enum": [
+                                "GenerativeLLM",
+                                "GenerativeImage",
+                            ],
                         },
                         "source": {
                             "type": "string",
                             "description": "Source file path for the dataset",
                         },
                     },
-                    "required": ["dataset_name", "model_type", "source"],
+                    "required": ["dataset_name", "model_type"],
                 },
             ),
             types.Tool(
@@ -312,8 +316,6 @@ def get_server(
             arguments = {}
         logger.info(f"Received tool call: {name} with arguments: {arguments}")
         try:
-            # Dispatch the call to the correct tool implementation
-            # based on the tool name
             if name == "get_eval_structure":
                 result = await get_eval_structure(**arguments)
             elif name == "get_evals_list_for_create_eval":

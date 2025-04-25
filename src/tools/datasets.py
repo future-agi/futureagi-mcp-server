@@ -140,7 +140,14 @@ async def upload_dataset(dataset_name: str, model_type: str, source: str) -> dic
     """
 
     try:
-        dataset_config = DatasetConfig(name=dataset_name, model_type=model_type)
+        try:
+            dataset_config = DatasetConfig(
+                name=dataset_name, model_type=ModelTypes(model_type)
+            )
+        except ValueError:
+            return {
+                "error": f"Invalid model_type: '{model_type}'. Valid types are: {', '.join([t.value for t in ModelTypes])}"
+            }
 
         dataset_client = DatasetClient(
             dataset_config=dataset_config,
@@ -188,7 +195,7 @@ async def add_evaluation_to_dataset(
     expected_column_name: str = "",
     save_as_template: bool = False,
     reason_column: bool = False,
-    config: Dict[str, Any] = {},
+    config: Dict[str, Any] = None,
 ) -> dict:
     """Adds an evaluation column to a specified dataset and runs the evaluation.
     Fetch the eval structure from the eval_id NOT the UUID this is important.

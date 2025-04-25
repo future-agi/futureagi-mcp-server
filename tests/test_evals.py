@@ -1,8 +1,6 @@
-import os
 import time
 
 import pytest
-import pytest_asyncio
 
 # Import tool functions directly
 from src.tools.evals import (
@@ -11,23 +9,6 @@ from src.tools.evals import (
     get_eval_structure,
     get_evals_list_for_create_eval,
 )
-from src.utils import setup_environment
-
-
-@pytest_asyncio.fixture(scope="module", autouse=True)
-def setup_env():
-    """Set up environment variables for tests."""
-    # Ensure required env vars are present for the actual API calls
-    api_key = os.getenv("FI_API_KEY")
-    secret_key = os.getenv("FI_SECRET_KEY")
-    base_url = os.getenv(
-        "FI_BASE_URL", "https://api.futureagi.com"
-    )  # Default if not set
-    if not api_key or not secret_key:
-        pytest.skip(
-            "FI_API_KEY and FI_SECRET_KEY environment variables must be set to run integration tests."
-        )
-    setup_environment(api_key, secret_key, base_url)
 
 
 @pytest.fixture

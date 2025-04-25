@@ -74,5 +74,5 @@ def main(
 
 
 if __name__ == "__main__":
-    print("Running main...", flush=True)
+    logger.info("Running main...", flush=True)
     main()
