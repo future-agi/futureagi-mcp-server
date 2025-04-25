@@ -47,7 +47,31 @@ pip install -e .
 To run the server:
 
 ```bash
-python src/server.py
+python main.py
+```
+
+To Configure with MCP Clients like VS Code and Claude
+
+```
+{
+  "mcpServers": {
+    "FutureAGI-MCP": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/path/to/futureagi-mcp-server",
+        "run",
+        "main.py"
+      ],
+      "env": {
+        "FI_SECRET_KEY": "your_api_key",
+        "FI_API_KEY": "your_secret_key",
+        "FI_BASE_URL": "https://api.futureagi.com",
+        "PYTHONPATH": "/path/to/futureagi-mcp-server"
+      }
+    }
+  }
+}
 ```
 
 ## Project Structure
