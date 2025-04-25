@@ -127,8 +127,6 @@ async def test_evaluate(batch_eval_request):
     # Call function directly, unpacking the fixture dict
     response_data = await evaluate(**batch_eval_request)
 
-    # Assert directly on the returned list/dict (adjust based on actual return type)
-    # Assuming evaluate returns a dict with 'eval_results'
     assert "eval_results" in response_data
 
 

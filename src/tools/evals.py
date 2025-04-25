@@ -191,7 +191,7 @@ async def get_eval_structure(template_id: str):
         return response.json()
     except Exception as e:
         logger.error(f"Failed to get evaluation structure: {str(e)}", exc_info=True)
-        return json.dumps({"error": str(e)})
+        return {"error": str(e)}
 
 
 async def get_evals_list_for_create_eval(eval_type: str) -> dict:
@@ -224,7 +224,7 @@ async def get_evals_list_for_create_eval(eval_type: str) -> dict:
         return response.json()
     except Exception as e:
         logger.error(f"Failed to get evaluations list: {str(e)}", exc_info=True)
-        return json.dumps({"error": str(e)})
+        return {"error": str(e)}
 
 
 async def create_eval(eval_name: str, template_id: str, config: dict) -> dict:
@@ -269,7 +269,7 @@ async def create_eval(eval_name: str, template_id: str, config: dict) -> dict:
         return response.json()
     except Exception as e:
         logger.error(f"Failed to create evaluation: {str(e)}", exc_info=True)
-        return json.dumps({"error": str(e)})
+        return {"error": str(e)}
 
 
 async def evaluate(eval_templates: List[dict], inputs: List[dict]) -> dict:
@@ -357,7 +357,7 @@ async def evaluate(eval_templates: List[dict], inputs: List[dict]) -> dict:
         return eval_results.model_dump()
     except Exception as e:
         logger.error(f"Error during evaluation: {str(e)}", exc_info=True)
-        return json.dumps({"error": str(e)})
+        return {"error": str(e)}
 
 
 async def all_evaluators() -> dict:
@@ -394,7 +394,7 @@ async def all_evaluators() -> dict:
             key=lambda x: x["eval_tags"] and "CUSTOM" in x["eval_tags"], reverse=True
         )
         logger.info(f"Evaluators: {evaluators}")
-        return json.dumps(evaluators)
+        return evaluators
     except Exception as e:
         logger.error(f"Failed to fetch evaluators: {str(e)}", exc_info=True)
-        return json.dumps({"error": str(e)})
+        return {"error": str(e)}

@@ -9,7 +9,7 @@ logger = get_logger()
 
 PROTECT_DESCRIPTION = """
     Protect input strings against harmful content using a list of protection rules.
-    Do not use this tool for evaluating content. Use the evaluate tool for that.
+    Do not use this tool for evaluating content. Use the evaluate tool for evaluating content.
 
     Args:
         inputs: Single string to evaluate. Can be text, image file path/URL, or audio file path/URL
@@ -43,7 +43,7 @@ async def protect(
 ) -> Dict:
     """
     Protect input strings against harmful content using a list of protection rules.
-    Do not use this tool for evaluating content. Use the evaluate tool for that.
+    Do not use this tool for evaluating content. Use the evaluate tool for evaluating content.
 
     Args:
         inputs: Single string to evaluate. Can be text, image file path/URL, or audio file path/URL
