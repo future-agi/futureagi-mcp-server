@@ -113,9 +113,17 @@ def get_server(
                                 "type": "object",
                                 "properties": {
                                     "eval_id": {"type": "string"},
-                                    "config": {"type": "object"},
+                                    "config": {
+                                        "type": "object",
+                                        "description": "Additional configuration parameters",
+                                        "properties": {
+                                            "criteria": {"type": "string"},
+                                            "model": {"type": "string"},
+                                        },
+                                        "required": [],
+                                    },
                                 },
-                                "required": ["eval_id"],
+                                "required": ["eval_id", "config"],
                             },
                         },
                         "inputs": {

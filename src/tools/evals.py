@@ -71,13 +71,39 @@ CREATE_EVAL_DESCRIPTION = """Create a new evaluation template based on an existi
     """
 
 EVALUATE_DESCRIPTION = """
-    First Fetch the all the evaluators using the all_evaluators tool.
-    Then find the eval_id from the all_evaluators list.
-    Then evaluate the inputs against the eval templates.
+    Evaluate inputs against specified evaluation templates.
 
-    The inputs are a list of test cases that has to be evaluated.
-    Inputs should contain the required fields for respective eval template.
+    Steps:
+    1. Fetch all evaluators using the all_evaluators tool.
+    2. Find the eval_id for each template in the all_evaluators list.
+    3. Evaluate inputs against the specified templates.
+
+    Args:
+        eval_templates (List[Dict]): List of evaluation templates to use.
+            Each template is a dict with:
+            - eval_id (str): String of integer representing the eval template ID.
+            - config (Optional[Dict]): Additional configuration parameters.
+        inputs (List[Dict]): List of test cases to evaluate.
+            Each input is a dict containing required fields for the respective eval template.
+
+    Returns:
+        List[BatchRunResult]: Evaluation results.
+
+    IMPORTANT:
+    - Always print the output in markdown table format.
+    - Combine both inputs and the result of the evaluation in the table.
+
     Example:
+    eval_templates = [
+        {
+            "eval_id": "1",
+            "config": {
+                "criteria": "Evaluate helpfulness",
+                "model": "gpt-4"
+            }
+        }
+    ]
+
     inputs = [
         {
             "text": "You are a helpful assistant",
@@ -87,50 +113,66 @@ EVALUATE_DESCRIPTION = """
         }
     ]
 
-    The eval_templates are a list of evaluation that are used to evaluate the inputs.
-    Eval id should be a string of integer of the eval template.
-    You can get the eval_id from the all_evaluators list.
-
-    Example:
+    Example for deterministic evals:
     eval_templates = [
         {
             "eval_id": "1",
-            "config": Optional[EvalConfig] = {
-                "criteria": str,
-                "model": str
-            } # can be empty
+            "config": {
+                "input": {
+                    "input1" : "response",
+                    "input2" : "context",
+                },
+                "choices": [
+                    "Yes",
+                    "No"
+                ],
+                "rule_prompt": "Is the {{input1}} grounded in {{input2}}",
+                "multi_choice": False
+            }
         }
     ]
 
-    Args:
-        eval_templates: List[
-            {
-                "eval_id": str,
-                "config": Optional = {
-                    "criteria": str,
-                    "model": str
-                }
-            }
-        ]
-        inputs: List[
-            {
-                "text": Optional[str] = None,
-                "document": Optional[str] = None,
-                "input": Optional[str] = None,
-                "output": Optional[str] = None,
-                "prompt": Optional[str] = None,
-                "criteria": Optional[str] = None,
-                "actual_json": Optional[dict] = None,
-                "expected_json": Optional[dict] = None,
-                "expected_text": Optional[str] = None,
-                "query": Optional[str] = None,
-                "response": Optional[str] = None,
-                "context": Union[List[str], str] = None
-            }
-        ]
+    inputs = [
+        {
+            "response": "The sky is blue",
+            "context": "The sky is blue"
+        }
+    ]
+    """
 
-    Returns:
-        List[BatchRunResult]
+EVALUATE_CONFIG_DESCRIPTION = """
+    Config for the evaluation. The config object may contain the following parameters depending on the evaluator type:
+
+    For Deterministic Evals:
+    - input: Input data or parameters for the evaluation rule
+    - choices: Set of possible choices for multiple-choice outputs
+    - rule_prompt: Specific prompt or rule to evaluate against Use the variable {input} in the prompt
+    - multi_choice: Boolean flag for multiple-choice output format
+
+    For Similarity & Text Analysis:
+    - comparator: Algorithm for text comparison (e.g. CosineSimilarity)
+    - failure_threshold: Numerical threshold for similarity comparison
+    - substring: Characters to check at text start/end
+    - case_sensitive: Boolean for case-sensitive text matching
+    - keywords: List of words/phrases to check for
+    - max_length/min_length: Character length constraints
+    - pattern: Regex pattern for text matching
+
+    For AI/Model Based:
+    - model: Language model to use (e.g. gpt-4, claude-3)
+    - check_internet: Boolean to allow internet access
+    - eval_prompt: Prompt template for AI evaluation
+    - system_prompt: System context for AI agent
+
+    For API/External:
+    - url: API endpoint URL
+    - headers: HTTP request headers
+    - payload: Request body data
+
+    For Custom:
+    - code: Custom Python code string
+    - validations: JSON validation rules
+    - criteria: Natural language evaluation criteria
     """
 
 ALL_EVALUATORS_DESCRIPTION = """Get all evaluators and their configurations, always print the evaluators in the order of CUSTOM, then FUTURE_EVALS, then the rest
