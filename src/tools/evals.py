@@ -1,12 +1,13 @@
 import json
 import os
-from typing import List
+from typing import List, Optional
 
 from fi.api.auth import APIKeyAuth
 from fi.api.types import HttpMethod, RequestConfig
 from fi.evals import EvalClient
 from fi.evals.templates import EvalTemplate
 from fi.testcases import TestCase
+from pydantic import ConfigDict
 
 from src.logger import get_logger
 from src.tools.routes import Routes
@@ -94,50 +95,47 @@ EVALUATE_DESCRIPTION = """
     - Combine both inputs and the result of the evaluation in the table.
 
     Example:
-    eval_templates = [
-        {
-            "eval_id": "1",
-            "config": {
-                "criteria": "Evaluate helpfulness",
-                "model": "gpt-4"
+    {
+        "eval_templates": [
+            {
+                "eval_id": "5",
+                "config": {}
             }
-        }
-    ]
+        ],
+        "inputs": [
+            {
+                "output": "The sky is blue.",
+                "context": "The sky is blue because of the way sunlight interacts with Earth's atmosphere."
+            }
+        ]
+    }
 
-    inputs = [
-        {
-            "text": "You are a helpful assistant",
-            "output": "You are a helpful assistant",
-            "prompt": "You are a helpful assistant",
-            "criteria": "You are a helpful assistant"
-        }
-    ]
-
-    Example for deterministic evals:
-    eval_templates = [
-        {
-            "eval_id": "1",
-            "config": {
-                "input": {
-                    "input1" : "response",
-                    "input2" : "context",
+    DETERMINISTIC EVALS (Only for Deterministic Evals eval_id = '3')
+    {
+        "eval_templates": [
+            {
+                "eval_id": "3",
+                "config": {
+                    "input": {
+                        "placeholder1": "input_key1",
+                        "placeholder2": "input_key2"
+                    },
+                    "rule_prompt": "can you please check if the {{placeholder1}} is grounded in {{placeholder2}}"
                 },
                 "choices": [
                     "Yes",
                     "No"
                 ],
-                "rule_prompt": "Is the {{input1}} grounded in {{input2}}",
                 "multi_choice": False
             }
-        }
-    ]
-
-    inputs = [
-        {
-            "response": "The sky is blue",
-            "context": "The sky is blue"
-        }
-    ]
+        ],
+        "inputs": [
+            {
+                "input_key1": "value1",
+                "input_key2": "value2"
+            }
+        ]
+    }
     """
 
 EVALUATE_CONFIG_DESCRIPTION = """
@@ -175,7 +173,13 @@ EVALUATE_CONFIG_DESCRIPTION = """
     - criteria: Natural language evaluation criteria
     """
 
-ALL_EVALUATORS_DESCRIPTION = """Get all evaluators and their configurations, always print the evaluators in the order of CUSTOM, then FUTURE_EVALS, then the rest
+ALL_EVALUATORS_DESCRIPTION = """
+    Get all evaluators and their configurations, sorted in a specific order:
+    1. CUSTOM evaluators first - These are user-defined custom evaluations
+    2. FUTURE_EVALS evaluators second - FutureAGI's proprietary evaluators
+    3. All remaining evaluators last - Standard/default evaluators
+
+    The returned evaluators will include their complete configurations and metadata.
 
     Returns a list of all available evaluators with their complete configurations including:
     - id: Unique UUID identifier for the evaluator
@@ -382,15 +386,25 @@ async def evaluate(eval_templates: List[dict], inputs: List[dict]) -> dict:
         constructed_eval_templates = []
 
         for template_input in eval_templates:
-            current_eval_template = EvalTemplate(
-                config=template_input["config"].get("config", {})
-            )
+            current_eval_template = EvalTemplate(config=template_input["config"])
             current_eval_template.eval_id = template_input["eval_id"]
             constructed_eval_templates.append(current_eval_template)
 
         constructed_inputs = []
         for input_item in inputs:
-            current_input = TestCase(**input_item)
+            # Dynamically create a class inheriting from TestCase with input fields
+            input_fields = {k: Optional[type(v)] for k, v in input_item.items()}
+            DynamicTestCase = type(
+                "DynamicTestCase",
+                (TestCase,),
+                {
+                    "__annotations__": input_fields,
+                    "model_config": ConfigDict(extra="allow"),
+                },
+            )
+
+            # Initialize the dynamic class with input values
+            current_input = DynamicTestCase(**input_item)
             constructed_inputs.append(current_input)
 
         eval_results = eval_client.evaluate(

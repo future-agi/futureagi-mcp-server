@@ -1,9 +1,11 @@
+import asyncio
 import time
 
 import pytest
 
 # Import tool functions directly
 from src.tools.evals import (
+    all_evaluators,
     create_eval,
     evaluate,
     get_eval_structure,
@@ -13,12 +15,18 @@ from src.tools.evals import (
 
 @pytest.fixture
 def eval_request():
+    evals = asyncio.run(all_evaluators())
+    template_id = None
+    for eval_item in evals:
+        if eval_item["eval_id"] == 5:
+            template_id = eval_item["id"]
+            break
     return {
         "eval_name": f"test_evaluation_{str(time.time())}",
-        "template_id": "fbb17917-54af-4b73-ba42-7ec183e74b48",
+        "template_id": template_id,
         "config": {
             "mapping": {
-                "text": "This is a test input",
+                "context": "This is a test input",
                 "output": "This is the expected output",
             },
             "config": {},
@@ -54,9 +62,7 @@ def batch_eval_request():
 @pytest.fixture
 def batch_eval_request_with_config():
     return {
-        "eval_templates": [
-            {"eval_id": "9", "config": {"config": {"check_internet": False}}}
-        ],
+        "eval_templates": [{"eval_id": "9", "config": {"check_internet": False}}],
         "inputs": [
             {
                 "input": "What is the capital of France?",
@@ -81,14 +87,12 @@ async def test_get_evals_list():
 @pytest.mark.asyncio
 async def test_get_eval_structure():
     """Test getting evaluation structure"""
-    template_id = "fbb17917-54af-4b73-ba42-7ec183e74b48"
+    evals = await all_evaluators()
+    template_id = evals[0]["id"]
     # Call function directly
     response_data = await get_eval_structure(template_id=template_id)
 
     # Assert directly on the returned dict
-    print("*" * 100)
-    print(response_data)
-    print("*" * 100)
     assert "status" in response_data
 
 
@@ -120,3 +124,40 @@ async def test_batch_eval_with_config(batch_eval_request_with_config):
     # Assert directly on the returned list/dict
     # Assuming evaluate returns a dict with 'eval_results'
     assert "eval_results" in response_data
+
+
+@pytest.fixture
+def deterministic_eval_payload():
+    return {
+        "eval_templates": [
+            {
+                "eval_id": "3",
+                "config": {
+                    "input": {"input1": "response", "input2": "context"},
+                    "choices": ["Yes", "No"],
+                    "rule_prompt": "Is the {{input1}} grounded in {{input2}}?",
+                    "multi_choice": False,
+                },
+            }
+        ],
+        "inputs": [
+            {
+                "response": "The sky is blue.",
+                "context": "The sky is blue because of the way sunlight interacts with Earth's atmosphere.",
+            },
+            {
+                "response": "Grass is green.",
+                "context": "Grass appears green due to the presence of chlorophyll.",
+            },
+        ],
+    }
+
+
+@pytest.mark.asyncio
+async def test_deterministic_eval(deterministic_eval_payload):
+    """Test deterministic evaluation"""
+    response_data = await evaluate(**deterministic_eval_payload)
+    assert "eval_results" in response_data
+    assert isinstance(response_data["eval_results"], list)
+    # Optionally print or check the results
+    print("Deterministic Eval Results:", response_data["eval_results"])
