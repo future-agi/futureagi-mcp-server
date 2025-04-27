@@ -79,20 +79,15 @@ EVALUATE_DESCRIPTION = """
     2. Find the eval_id for each template in the all_evaluators list.
     3. Evaluate inputs against the specified templates.
 
-    Args:
-        eval_templates (List[Dict]): List of evaluation templates to use.
-            Each template is a dict with:
-            - eval_id (str): String of integer representing the eval template ID.
-            - config (Optional[Dict]): Additional configuration parameters.
-        inputs (List[Dict]): List of test cases to evaluate.
-            Each input is a dict containing required fields for the respective eval template.
+    Output MUST always be printed in markdown table format (this is mandatory).
+    Do not use plain text, lists, or any other format.
+    Example:
+    | Prompt | Agent Output | Expected Output | Eval Result |
+    |------------------|--------------|----------------|-------------|
+    | What is 2+2? | 4 | 4 | Pass |
+    ```
+    Any deviation from this format is not allowed.
 
-    Returns:
-        List[BatchRunResult]: Evaluation results.
-
-    IMPORTANT:
-    - Always print the output in markdown table format.
-    - Combine both inputs and the result of the evaluation in the table.
 
     Example:
     {
@@ -111,6 +106,29 @@ EVALUATE_DESCRIPTION = """
     }
 
     DETERMINISTIC EVALS (Only for Deterministic Evals eval_id = '3')
+
+    Steps to create a deterministic evaluation:
+    1. Define placeholders that map to your data fields
+       - Choose meaningful placeholder names that reflect the data being compared
+       - Map each placeholder to the corresponding input field key
+       Example: "placeholder1" -> 'response'
+               "placeholder2" -> 'context'
+
+    2. Write a clear rule prompt using the placeholders
+       - Use double curly braces {{placeholder}} syntax
+       - Make the evaluation criteria explicit
+       Example: "Is the {{placeholder1}} factually supported by the {{placeholder2}}?"
+
+    3. Specify the valid evaluation choices
+       - Define an array of possible outcomes
+       - Keep choices clear and unambiguous
+       Example: ["Yes", "No"] or ["Correct", "Incorrect"] or ["Positive", "Negative", "Neutral"]
+
+    4. Provide input data matching the placeholder mapping
+       - Input field keys must match the values of the corresponding placeholder
+       - Include all required fields for evaluation
+
+    Example payload:
     {
         "eval_templates": [
             {
@@ -320,37 +338,6 @@ async def create_eval(eval_name: str, template_id: str, config: dict) -> dict:
 
 async def evaluate(eval_templates: List[dict], inputs: List[dict]) -> dict:
     """
-    First Fetch the all the evaluators using the all_evaluators tool.
-    Then find the eval_id from the all_evaluators list.
-    Then evaluate the inputs against the eval templates.
-
-    The inputs are a list of test cases that has to be evaluated.
-    Inputs should contain the required fields for respective eval template.
-    Example:
-    inputs = [
-        {
-            "text": "You are a helpful assistant",
-            "output": "You are a helpful assistant",
-            "prompt": "You are a helpful assistant",
-            "criteria": "You are a helpful assistant"
-        }
-    ]
-
-    The eval_templates are a list of evaluation that are used to evaluate the inputs.
-    Eval id should be a string of integer of the eval template.
-    You can get the eval_id from the all_evaluators list.
-
-    Example:
-    eval_templates = [
-        {
-            "eval_id": "1",
-            "config": Optional[EvalConfig] = {
-                "criteria": str,
-                "model": str
-            } # can be empty
-        }
-    ]
-
     Args:
         eval_templates: List[
             {
