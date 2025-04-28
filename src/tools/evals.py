@@ -72,28 +72,15 @@ CREATE_EVAL_DESCRIPTION = """Create a new evaluation template based on an existi
     """
 
 EVALUATE_DESCRIPTION = """
-    Evaluate inputs against specified evaluation templates.
+    Use this tool to evaluate single and batch of inputs against specified evaluation templates.
 
-    Steps:
-    1. Fetch all evaluators using the all_evaluators tool.
-    2. Find the eval_id for each template in the all_evaluators list.
-    3. Evaluate inputs against the specified templates.
+    Before using this tool, you MUST:
+    1. Call the all_evaluators tool to retrieve the current list of evaluators.
+    2. Search for the evaluator by name (e.g., "Toxicity") in the returned list.
+    3. Use the eval_id from the all_evaluators output for the evaluation.
+    4. Do NOT use hardcoded or previously known eval_ids, as these may change.
+    5. Only after these steps, call the evaluate tool with the correct eval_id and your input.
 
-    Example:
-    {
-        "eval_templates": [
-            {
-                "eval_id": "5",
-                "config": {}
-            }
-        ],
-        "inputs": [
-            {
-                "output": "The sky is blue.",
-                "context": "The sky is blue because of the way sunlight interacts with Earth's atmosphere."
-            }
-        ]
-    }
 
     DETERMINISTIC EVALS (Only for Deterministic Evals eval_id = '3')
 
@@ -128,13 +115,13 @@ EVALUATE_DESCRIPTION = """
                         "placeholder1": "input_key1",
                         "placeholder2": "input_key2"
                     },
-                    "rule_prompt": "can you please check if the {{placeholder1}} is grounded in {{placeholder2}}"
-                },
-                "choices": [
-                    "Yes",
-                    "No"
-                ],
-                "multi_choice": False
+                    "rule_prompt": "can you please check if the {{placeholder1}} is grounded in {{placeholder2}}",
+                    "choices": [
+                        "Yes",
+                        "No"
+                    ],
+                    "multi_choice": False
+                }
             }
         ],
         "inputs": [

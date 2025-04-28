@@ -62,15 +62,15 @@ ADD_EVALUATION_TO_DATASET_DESCRIPTION = """
     3. Dataset column validation:
        - Use the filesystem tools to read the columns of the dataset
        - Map dataset columns to template requirements:
-         * input_column_name -> Template input field
-         * output_column_name -> Template output/response field
-         * context_column_name -> Template context field
-         * expected_column_name -> Template expected field
+         * input_column_name -> ask the user to provide the column name
+         * output_column_name -> ask the user to provide the column name
+         * context_column_name -> ask the user to provide the column name
+         * expected_column_name -> ask the user to provide the column name
        - Verify column data types match template requirements
     4. Column name deduction:
        - Use dataset schema to automatically identify matching columns
-       - Follow naming conventions (input, output, context, expected)
        - Validate deduced column mappings against template
+       - Prompt the user with the column names and ask for confirmation
 
     Args:
         dataset_name (str): Name of the target dataset to which the evaluation will be added.

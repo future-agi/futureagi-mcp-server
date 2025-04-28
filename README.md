@@ -25,17 +25,16 @@ git clone https://github.com/future-agi/futureagi-mcp-server.git
 cd futureagi-mcp-server
 ```
 
-2. Create and activate a virtual environment:
+2. Install uv
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
+brew install uv
 ```
 
 3. Install dependencies:
 
 ```bash
-pip install -e .
+uv sync   # this will create a virtual environment if not present
 ```
 
 ## Usage
