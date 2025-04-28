@@ -1,20 +1,16 @@
 # Future AGI MCP Server
 
-A powerful server implementation that integrates with the Future AGI SDK through the Model Context Protocol (MCP). This server provides a standardized and efficient interface for conducting advanced LLM operations, including system optimizations, performance evaluations, and experimental research.
-
-## Description
-
-This project serves as a bridge between your applications and Future AGI's capabilities through the Model Context Protocol (MCP). It enables standardized communication and interaction with Future AGI's powerful features, making it easier to implement and manage complex LLM-based operations.
+A powerful server implementation that integrates with the Future AGI SDK through the Model Context Protocol (MCP). This server provides tools which can be used to interact with Future AGI features.
 
 ## Features
 
-- Evaluations (preset and user)
-- Protect
-- Uploading Dataset
+- Running single and batch evaluations using chat
+- Protect a LLM Response
+- Uploading Dataset and adding evaluation to it
 
 ## Requirements
 
-- Python >= 3.13.1
+- Python >= 3.10
 - FutureAGI >= 0.5.9
 - HTTPX >= 0.28.1
 - MCP CLI >= 1.6.0

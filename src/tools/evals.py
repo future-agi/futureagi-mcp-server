@@ -79,16 +79,6 @@ EVALUATE_DESCRIPTION = """
     2. Find the eval_id for each template in the all_evaluators list.
     3. Evaluate inputs against the specified templates.
 
-    Output MUST always be printed in markdown table format (this is mandatory).
-    Do not use plain text, lists, or any other format.
-    Example:
-    | Prompt | Agent Output | Expected Output | Eval Result |
-    |------------------|--------------|----------------|-------------|
-    | What is 2+2? | 4 | 4 | Pass |
-    ```
-    Any deviation from this format is not allowed.
-
-
     Example:
     {
         "eval_templates": [
