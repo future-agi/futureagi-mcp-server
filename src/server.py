@@ -357,8 +357,21 @@ def get_server(
             else:
                 result_str = str(result)
 
-            logger.info(f"Tool {name} executed successfully. Result: {result_str}")
-            return [types.TextContent(text=result_str, type="text")]
+            output = [types.TextContent(text=result_str, type="text")]
+
+            if name == "evaluate":
+                output.insert(
+                    0,
+                    types.TextContent(
+                        text="""
+Convert the output to MARKDOWN.md code block format (this is mandatory).
+Do not use plain text, lists, or any other format.
+""",
+                        type="text",
+                    ),
+                )
+
+            return output
         except Exception as e:
             logger.error(
                 f"Error executing tool {name} with args {arguments}: {str(e)}",
