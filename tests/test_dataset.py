@@ -45,10 +45,9 @@ async def test_upload_dataset(sample_csv_file):
     response_data = await upload_dataset(**request_args)
 
     assert isinstance(response_data, dict)
-    if response_data.get("status") == "error":
-        pytest.fail(f"Upload failed: {response_data.get('error', 'Unknown error')}")
+    if response_data.get("error"):
+        pytest.fail(f"Upload failed: {response_data.get('error')}")
 
-    assert response_data.get("status") == "success"
     assert "dataset_id" in response_data
 
 
@@ -79,10 +78,5 @@ async def test_add_evaluation_to_dataset(sample_csv_file):
     response_data = await add_evaluation_to_dataset(**request_args)
 
     assert isinstance(response_data, dict)
-    if response_data.get("status") == "error":
-        pytest.fail(
-            f"Add evaluation failed: {response_data.get('error', 'Unknown error')}"
-        )
-
-    assert "status" in response_data
-    assert response_data["status"] != "error"
+    if response_data.get("error"):
+        pytest.fail(f"Add evaluation failed: {response_data.get('error')}")

@@ -72,20 +72,39 @@ ADD_EVALUATION_TO_DATASET_DESCRIPTION = """
        - Validate deduced column mappings against template
        - Prompt the user with the column names and ask for confirmation
 
-    Args:
-        dataset_name (str): Name of the target dataset to which the evaluation will be added.
-        name (str): Name for the new evaluation column that will be created in the dataset.
-        eval_id (str): eval_id of the evaluation template to use (e.g., '1', '9', '11', etc.).
-        input_column_name (Optional[str]): Name of the column in the dataset containing input data, if required by the chosen eval template.
-        output_column_name (Optional[str]): Name of the column in the dataset containing output/response data, if required by the chosen eval template.
-        context_column_name (Optional[str]): Name of the column in the dataset containing context data, if required by the chosen eval template.
-        expected_column_name (Optional[str]): Name of the column in the dataset containing expected response data, if required by the chosen eval template.
-        save_as_template (bool): If True, saves this evaluation configuration as a new template for future use.
-        reason_column (bool): If True, adds an additional column to explain the evaluation reason or score.
-        config (Optional[Dict[str, Any]]): Additional configuration parameters specific to the chosen evaluation template.
+    WHEN ADDINGDETERMINISTIC EVALS (Only for Deterministic Evals eval_id = '3')
 
-    Returns:
-        dict: A dictionary indicating the success or failure of the operation, with relevant status messages.
+    You MUST follow these steps to add a deterministic evaluation:
+    Add these to the config dictionary:
+    1. Define placeholders that map to your column names
+       Example: "placeholder1" -> column_name1
+               "placeholder2" -> column_name2
+
+    2. Write a clear rule prompt using the placeholders
+       - Use double curly braces {{placeholder}} syntax
+       - Make the evaluation criteria explicit
+       Example: "Is the {{placeholder1}} factually supported by the {{placeholder2}}?"
+
+    3. Specify the valid evaluation choices
+       - Define an array of possible outcomes
+       - Keep choices clear and unambiguous
+       Example: ["Yes", "No"] or ["Correct", "Incorrect"] or ["Positive", "Negative", "Neutral"]
+    4. No requirement for input_column_name, output_column_name, context_column_name, expected_column_name
+
+    EXAMPLE PAYLOAD FOR DETERMINISTIC EVALS:
+    {
+        "name": "deterministic_evaluation",
+        "eval_id": "3",
+        "config": {
+            "input": {
+                "placeholder1": "column_name1",
+                "placeholder2": "column_name2"
+            },
+            "rule_prompt": "can you please check if the {{placeholder1}} is grounded in {{placeholder2}}",
+            "choices": ["Yes", "No"],
+            "multi_choice": False
+        }
+    }
     """
 
 DOWNLOAD_DATASET_AND_FIND_THE_INSIGHTS_DESCRIPTION = """
@@ -182,7 +201,7 @@ async def upload_dataset(dataset_name: str, model_type: str, source: str) -> dic
         logger.error(
             f"Dataset operation failed with unexpected error: {e}", exc_info=True
         )
-        return {"error": f"An unexpected error occurred: {str(e)}"}
+        return {"error": str(e)}
 
 
 async def add_evaluation_to_dataset(
@@ -197,7 +216,8 @@ async def add_evaluation_to_dataset(
     reason_column: bool = False,
     config: Dict[str, Any] = None,
 ) -> dict:
-    """Adds an evaluation column to a specified dataset and runs the evaluation.
+    """
+    Adds an evaluation column to a specified dataset and runs the evaluation.
     Fetch the eval structure from the eval_id NOT the UUID this is important.
     Eval id is the integer string of the eval template. Can find it in the output of the all_evaluators tool.
 
@@ -234,6 +254,21 @@ async def add_evaluation_to_dataset(
             fi_secret_key=os.getenv("FI_SECRET_KEY"),
             fi_base_url=os.getenv("FI_BASE_URL"),
         )
+
+        if config and config["input"]:
+            new_input = []
+            count = 1
+            for key, column_name in config["input"].items():
+                column_id = dataset_client.get_column_id(column_name)
+                if column_id:
+                    new_input.append(column_id)
+                variable_name = f"variable_{count}"
+                config["rule_prompt"] = config["rule_prompt"].replace(
+                    key, variable_name
+                )
+                count += 1
+            config["input"] = new_input
+
         dataset_client.add_evaluation(
             name=name,
             eval_template=eval_template,
@@ -260,7 +295,7 @@ async def add_evaluation_to_dataset(
             f"An unexpected error occurred while adding evaluation to dataset {dataset_name}: {e}",
             exc_info=True,
         )
-        return {"status": "error", "message": f"An unexpected error occurred: {str(e)}"}
+        return {"error": str(e)}
 
 
 async def download_dataset_and_find_the_insights(
@@ -285,4 +320,4 @@ async def download_dataset_and_find_the_insights(
             f"An unexpected error occurred while downloading dataset {dataset_name}: {e}",
             exc_info=True,
         )
-        return {"status": "error", "message": f"An unexpected error occurred: {str(e)}"}
+        return {"error": str(e)}
