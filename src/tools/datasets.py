@@ -107,8 +107,8 @@ ADD_EVALUATION_TO_DATASET_DESCRIPTION = """
     }
     """
 
-DOWNLOAD_DATASET_AND_FIND_THE_INSIGHTS_DESCRIPTION = """
-    This function is used to download a dataset from FutureAGI and find the insights.
+DOWNLOAD_DATASET_DESCRIPTION = """
+    This function is used to download a dataset from FutureAGI.
     It will return a dictionary with the dataset name, the file path, and the insights.
 
     Please follow these steps strictly before calling this function:
@@ -119,16 +119,29 @@ DOWNLOAD_DATASET_AND_FIND_THE_INSIGHTS_DESCRIPTION = """
        - Ensure file_path is a string
        - Verify file_path is a valid path
        - If the Obsolute path is not provided, add the current working directory to the file_path
+"""
 
-    After downloading the dataset, find the insights of the column and return the insights.
+DATASET_EVALUATION_INSIGHTS_DESCRIPTION = """
+    This function is used to get the insights of the evaluation dataset.
+    It will return a dictionary with the evaluation insights.
+    Please follow these steps strictly before calling this function:
+    1. Validate dataset_name format:
+       - Ensure dataset_name is a string
+       - Verify dataset_name exists in FutureAGI
 
-    Args:
-        dataset_name (str): Name of the dataset to download
-        file_path (str): Path to save the downloaded dataset
+    The function returns evaluation insights including:
+    - Overall statistics:
+        - totalRows: Total number of rows evaluated
+        - passRate: Overall pass rate percentage
 
-    Returns:
-        Status: success or error
-        Message: File path of the downloaded dataset
+    - Per metric results containing:
+        - metricName: Name of the evaluation metric
+        - id: Unique identifier for the metric
+        - totalRows: Number of rows evaluated for this metric
+        - averageScore: Average score across all rows (0-100)
+        - successRate: Success rate percentage
+        - outputType: Type of output (e.g. "numeric")
+        - percentile scores: p5 through p100 showing score distribution
 """
 
 
@@ -298,9 +311,7 @@ async def add_evaluation_to_dataset(
         return {"error": str(e)}
 
 
-async def download_dataset_and_find_the_insights(
-    dataset_name: str, file_path: str
-) -> dict:
+async def download_dataset(dataset_name: str, file_path: str) -> dict:
     """
     Downloads a dataset from FutureAGI and saves it to a local file.
     """
@@ -318,6 +329,26 @@ async def download_dataset_and_find_the_insights(
     except Exception as e:
         logger.error(
             f"An unexpected error occurred while downloading dataset {dataset_name}: {e}",
+            exc_info=True,
+        )
+        return {"error": str(e)}
+
+
+async def get_evaluation_insights(dataset_name: str) -> dict:
+    """
+    Get the insights of the evaluation dataset.
+    """
+    try:
+        dataset_client = DatasetClient(
+            dataset_config=DatasetConfig(
+                name=dataset_name, model_type=ModelTypes.GENERATIVE_LLM
+            ),
+        )
+        insights = dataset_client.get_eval_stats()
+        return insights
+    except Exception as e:
+        logger.error(
+            f"An unexpected error occurred while getting evaluation insights for dataset {dataset_name}: {e}",
             exc_info=True,
         )
         return {"error": str(e)}

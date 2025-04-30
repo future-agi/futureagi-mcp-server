@@ -9,10 +9,12 @@ from src.logger import get_logger
 # Import tool descriptions
 from src.tools.datasets import (
     ADD_EVALUATION_TO_DATASET_DESCRIPTION,
-    DOWNLOAD_DATASET_AND_FIND_THE_INSIGHTS_DESCRIPTION,
+    DATASET_EVALUATION_INSIGHTS_DESCRIPTION,
+    DOWNLOAD_DATASET_DESCRIPTION,
     UPLOAD_DATASET_DESCRIPTION,
     add_evaluation_to_dataset,
-    download_dataset_and_find_the_insights,
+    download_dataset,
+    get_evaluation_insights,
     upload_dataset,
 )
 
@@ -296,8 +298,8 @@ def get_server(
                 },
             ),
             types.Tool(
-                name="download_dataset_and_find_the_insights",
-                description=DOWNLOAD_DATASET_AND_FIND_THE_INSIGHTS_DESCRIPTION,
+                name="download_dataset",
+                description=DOWNLOAD_DATASET_DESCRIPTION,
                 inputSchema={
                     "type": "object",
                     "properties": {
@@ -311,6 +313,20 @@ def get_server(
                         },
                     },
                     "required": ["dataset_name", "file_path"],
+                },
+            ),
+            types.Tool(
+                name="get_evaluation_insights",
+                description=DATASET_EVALUATION_INSIGHTS_DESCRIPTION,
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "dataset_name": {
+                            "type": "string",
+                            "description": "Name of the dataset to get insights",
+                        },
+                    },
+                    "required": ["dataset_name"],
                 },
             ),
         ]
@@ -341,8 +357,10 @@ def get_server(
                 result = await add_evaluation_to_dataset(**arguments)
             elif name == "protect":
                 result = await protect(**arguments)
-            elif name == "download_dataset_and_find_the_insights":
-                result = await download_dataset_and_find_the_insights(**arguments)
+            elif name == "download_dataset":
+                result = await download_dataset(**arguments)
+            elif name == "get_evaluation_insights":
+                result = await get_evaluation_insights(**arguments)
             else:
                 logger.warning(f"Unknown tool name received: {name}")
                 return [
