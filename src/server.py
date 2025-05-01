@@ -174,7 +174,7 @@ def get_server(
                         },
                         "source": {
                             "type": "string",
-                            "description": "Source file path for the dataset",
+                            "description": "Source file path for the dataset (local file path or URL) if not provided, the empty dataset will be created in the FutureAGI platform",
                         },
                     },
                     "required": ["dataset_name", "model_type"],
@@ -196,7 +196,7 @@ def get_server(
                         },
                         "eval_id": {
                             "type": "string",
-                            "description": "ID of the evaluation template to use",
+                            "description": "eval_id for the evaluation template, example: '1', '9', '11'",
                         },
                         "required_keys_to_column_names": {
                             "type": "object",
@@ -212,7 +212,7 @@ def get_server(
                         },
                         "config": {
                             "type": "object",
-                            "description": "Additional configuration parameters",
+                            "description": "Additional configuration parameters, use the config['config'] dictionary in the eval template structure",
                         },
                     },
                     "required": [
@@ -220,6 +220,7 @@ def get_server(
                         "name",
                         "eval_id",
                         "required_keys_to_column_names",
+                        "config",
                     ],
                 },
             ),

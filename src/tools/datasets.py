@@ -62,12 +62,8 @@ ADD_EVALUATION_TO_DATASET_DESCRIPTION = """
        - Read the dataset columns either from the local file or download the dataset and read the columns
        - construct the required_keys_to_column_names dictionary
     3. For config generation, use the following steps:
-        find the config['config'] dictionary in the eval template structure
-        try to add the keys present the config['config'] dictionary to the config dictionary
-        Example:
-        config = {
-            "criteria": "criteria",
-        }
+       - Find the config['config'] dictionary in the eval template structure
+       - You MUST add the keys present the config['config'] dictionary to the config dictionary
 
 
     WHEN ADDINGDETERMINISTIC EVALS (Only for Deterministic Evals eval_id = '3')
