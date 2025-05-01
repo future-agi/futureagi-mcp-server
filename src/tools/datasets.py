@@ -58,19 +58,17 @@ ADD_EVALUATION_TO_DATASET_DESCRIPTION = """
        - Verify eval_id exists in all_evaluators output
     2. Fetch evaluation structure:
        - Get eval template structure using template_id which is the UUID of the eval template
-       - Extract required column types from template
-    3. Dataset column validation:
-       - Use the filesystem tools to read the columns of the dataset
-       - Map dataset columns to template requirements:
-         * input_column_name -> ask the user to provide the column name
-         * output_column_name -> ask the user to provide the column name
-         * context_column_name -> ask the user to provide the column name
-         * expected_column_name -> ask the user to provide the column name
-       - Verify column data types match template requirements
-    4. Column name deduction:
-       - Use dataset schema to automatically identify matching columns
-       - Validate deduced column mappings against template
-       - Prompt the user with the column names and ask for confirmation
+       - Extract required keys from the eval template
+       - Read the dataset columns either from the local file or download the dataset and read the columns
+       - construct the required_keys_to_column_names dictionary
+    3. For config generation, use the following steps:
+        find the config['config'] dictionary in the eval template structure
+        try to add the keys present the config['config'] dictionary to the config dictionary
+        Example:
+        config = {
+            "criteria": "criteria",
+        }
+
 
     WHEN ADDINGDETERMINISTIC EVALS (Only for Deterministic Evals eval_id = '3')
 
@@ -103,6 +101,8 @@ ADD_EVALUATION_TO_DATASET_DESCRIPTION = """
             "rule_prompt": "can you please check if the {{placeholder1}} is grounded in {{placeholder2}}",
             "choices": ["Yes", "No"],
             "multi_choice": False
+        },
+        "required_keys_to_column_names": {
         }
     }
     """
@@ -221,10 +221,7 @@ async def add_evaluation_to_dataset(
     dataset_name: str,
     name: str,
     eval_id: str,
-    input_column_name: str = "",
-    output_column_name: str = "",
-    context_column_name: str = "",
-    expected_column_name: str = "",
+    required_keys_to_column_names: Dict[str, str],
     save_as_template: bool = False,
     reason_column: bool = False,
     config: Dict[str, Any] = None,
@@ -240,10 +237,7 @@ async def add_evaluation_to_dataset(
         dataset_name (str): Name of the target dataset to which the evaluation will be added.
         name (str): Name for the new evaluation column that will be created in the dataset.
         eval_id (str): eval_id of the evaluation template to use (e.g., '1', '9', '11', etc.).
-        input_column_name (Optional[str]): Name of the column in the dataset containing input data, if required by the chosen eval template.
-        output_column_name (Optional[str]): Name of the column in the dataset containing output/response data, if required by the chosen eval template.
-        context_column_name (Optional[str]): Name of the column in the dataset containing context data, if required by the chosen eval template.
-        expected_column_name (Optional[str]): Name of the column in the dataset containing expected response data, if required by the chosen eval template.
+        required_keys_to_column_names (Dict[str, str]): A dictionary mapping required keys of the eval template to column names in the dataset.
         save_as_template (bool): If True, saves this evaluation configuration as a new template for future use.
         reason_column (bool): If True, adds an additional column to explain the evaluation reason or score.
         config (Optional[Dict[str, Any]]): Additional configuration parameters specific to the chosen evaluation template.
@@ -268,7 +262,7 @@ async def add_evaluation_to_dataset(
             fi_base_url=os.getenv("FI_BASE_URL"),
         )
 
-        if config and config["input"]:
+        if config and "input" in config:
             new_input = []
             count = 1
             for key, column_name in config["input"].items():
@@ -285,10 +279,7 @@ async def add_evaluation_to_dataset(
         dataset_client.add_evaluation(
             name=name,
             eval_template=eval_template,
-            input_column_name=input_column_name,
-            output_column_name=output_column_name,
-            context_column_name=context_column_name,
-            expected_column_name=expected_column_name,
+            required_keys_to_column_names=required_keys_to_column_names,
             save_as_template=save_as_template,
             run=True,
             reason_column=reason_column,

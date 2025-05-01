@@ -70,8 +70,11 @@ async def test_add_evaluation_to_dataset(sample_csv_file):
     request_args = {
         "eval_id": "5",
         "dataset_name": dataset_name,
-        "output_column_name": "output",
-        "context_column_name": "context",
+        "required_keys_to_column_names": {
+            "input": "input",
+            "output": "output",
+            "context": "context",
+        },
         "name": "adherence_eval_test",
     }
 

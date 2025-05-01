@@ -198,21 +198,9 @@ def get_server(
                             "type": "string",
                             "description": "ID of the evaluation template to use",
                         },
-                        "input_column_name": {
-                            "type": "string",
-                            "description": "Name of the input data column",
-                        },
-                        "output_column_name": {
-                            "type": "string",
-                            "description": "Name of the output data column",
-                        },
-                        "context_column_name": {
-                            "type": "string",
-                            "description": "Name of the context data column",
-                        },
-                        "expected_column_name": {
-                            "type": "string",
-                            "description": "Name of the expected response column",
+                        "required_keys_to_column_names": {
+                            "type": "object",
+                            "description": "A dictionary mapping required keys of the eval template to column names in the dataset",
                         },
                         "save_as_template": {
                             "type": "boolean",
@@ -227,7 +215,12 @@ def get_server(
                             "description": "Additional configuration parameters",
                         },
                     },
-                    "required": ["dataset_name", "name", "eval_id"],
+                    "required": [
+                        "dataset_name",
+                        "name",
+                        "eval_id",
+                        "required_keys_to_column_names",
+                    ],
                 },
             ),
             types.Tool(
