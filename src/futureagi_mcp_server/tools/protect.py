@@ -2,8 +2,8 @@ from typing import Dict, List
 
 from fi.evals import EvalClient, ProtectClient
 
-from src.constants import DEFAULT_PROTECT_ACTION, DEFAULT_PROTECT_TIMEOUT
-from src.logger import get_logger
+from ..constants import DEFAULT_PROTECT_ACTION, DEFAULT_PROTECT_TIMEOUT
+from ..logger import get_logger
 
 logger = get_logger()
 

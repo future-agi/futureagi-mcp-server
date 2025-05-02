@@ -3,11 +3,11 @@ import json
 import mcp.types as types
 from mcp.server import Server
 
-from src.constants import SERVER_NAME
-from src.logger import get_logger
+from .constants import SERVER_NAME
+from .logger import get_logger
 
 # Import tool descriptions
-from src.tools.datasets import (
+from .tools.datasets import (
     ADD_EVALUATION_TO_DATASET_DESCRIPTION,
     DATASET_EVALUATION_INSIGHTS_DESCRIPTION,
     DOWNLOAD_DATASET_DESCRIPTION,
@@ -19,7 +19,7 @@ from src.tools.datasets import (
 )
 
 # Import tools from their respective modules
-from src.tools.evals import (
+from .tools.evals import (
     ALL_EVALUATORS_DESCRIPTION,
     CREATE_EVAL_DESCRIPTION,
     EVALUATE_DESCRIPTION,
@@ -31,8 +31,8 @@ from src.tools.evals import (
     get_eval_structure,
     get_evals_list_for_create_eval,
 )
-from src.tools.protect import PROTECT_DESCRIPTION, protect
-from src.utils import setup_environment
+from .tools.protect import PROTECT_DESCRIPTION, protect
+from .utils import setup_environment
 
 logger = get_logger()
 

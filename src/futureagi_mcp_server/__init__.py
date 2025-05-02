@@ -5,9 +5,9 @@ import mcp
 from mcp.server import NotificationOptions
 from mcp.server.models import InitializationOptions
 
-from src.futureagi_mcp_server.constants import SERVER_NAME, SERVER_VERSION
-from src.futureagi_mcp_server.logger import get_logger, setup_logging
-from src.futureagi_mcp_server.server import get_server
+from .constants import SERVER_NAME, SERVER_VERSION
+from .logger import get_logger, setup_logging
+from .server import get_server
 
 setup_logging()
 logger = get_logger()
@@ -71,8 +71,3 @@ def main(
     logger.info("Running server...", flush=True)
     # Run the async function
     asyncio.run(_run())
-
-
-if __name__ == "__main__":
-    logger.info("Running main...", flush=True)
-    main()

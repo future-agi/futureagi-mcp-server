@@ -5,7 +5,7 @@ from fi.datasets import DatasetClient
 from fi.datasets.types import DatasetConfig, ModelTypes
 from fi.evals.templates import EvalTemplate
 
-from src.logger import get_logger
+from ..logger import get_logger
 
 logger = get_logger()
 

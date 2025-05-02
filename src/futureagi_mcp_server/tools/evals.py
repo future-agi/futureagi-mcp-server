@@ -9,8 +9,8 @@ from fi.evals.templates import EvalTemplate
 from fi.testcases import TestCase
 from pydantic import ConfigDict
 
-from src.logger import get_logger
-from src.tools.routes import Routes
+from ..logger import get_logger
+from .routes import Routes
 
 logger = get_logger()
 

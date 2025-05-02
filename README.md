@@ -4,14 +4,16 @@ A powerful server implementation that integrates with the Future AGI SDK through
 
 ## Features
 
-- Running single and batch evaluations using chat
-- Protect a LLM Response
-- Uploading Dataset and adding evaluation to it
+🚀 Natural Language Evaluations—At Scale
+Why write scripts when you can just ask? Whether it’s a single response or thousands, Futurea AGI MCP lets you run advanced evaluations like hallucination detection, sentiment analysis, or factuality scoring through a simple chat prompt. It auto-selects evaluators, runs them in the background, and delivers results—zero setup, maximum speed.
+
+📂 Upload Datasets and Launch Evaluations Instantly
+Drop in a dataset and say the word. MCP handles file uploads, picks the right evaluators, and kicks off evaluations—all in the background, all from a single prompt. No GUIs, no manual tagging, just fast, intelligent data processing that works right inside your dev tools.
 
 ## Requirements
 
 - Python >= 3.10
-- FutureAGI >= 0.5.9
+- FutureAGI >= 0.5.10
 - HTTPX >= 0.28.1
 - MCP CLI >= 1.6.0
 - Pydantic >= 2.11.2
@@ -45,8 +47,7 @@ To run the server:
 python main.py
 ```
 
-To Configure with MCP Clients like VS Code and Claude
-
+To Configure with MCP Clients like VS Code and Claude using local fork
 ```
 {
   "mcpServers": {
@@ -63,6 +64,24 @@ To Configure with MCP Clients like VS Code and Claude
         "FI_API_KEY": "your_secret_key",
         "FI_BASE_URL": "https://api.futureagi.com",
         "PYTHONPATH": "/path/to/futureagi-mcp-server"
+      }
+    }
+  }
+}
+```
+
+A simple Configuration using uvx and published package
+```
+{
+  "mcpServers": {
+    "FutureAGI-MCP": {
+      "command": "uvx",
+      "args": [
+        "futureagi-mcp-server
+      ],
+      "env": {
+        "FI_SECRET_KEY": "your_api_key",
+        "FI_API_KEY": "your_secret_key",
       }
     }
   }

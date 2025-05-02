@@ -1,7 +1,7 @@
 import os
 from enum import Enum
 
-from src.constants import MODEL_HUB_DEVELOP_ID
+from ..constants import MODEL_HUB_DEVELOP_ID
 
 
 class Routes(Enum):
