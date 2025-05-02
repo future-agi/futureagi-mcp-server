@@ -10,14 +10,6 @@ Why write scripts when you can just ask? Whether it’s a single response or tho
 📂 Upload Datasets and Launch Evaluations Instantly
 Drop in a dataset and say the word. MCP handles file uploads, picks the right evaluators, and kicks off evaluations—all in the background, all from a single prompt. No GUIs, no manual tagging, just fast, intelligent data processing that works right inside your dev tools.
 
-## Requirements
-
-- Python >= 3.10
-- FutureAGI >= 0.5.10
-- HTTPX >= 0.28.1
-- MCP CLI >= 1.6.0
-- Pydantic >= 2.11.2
-
 ## Installation
 
 1. Clone the repository:
@@ -36,10 +28,10 @@ brew install uv
 3. Install dependencies:
 
 ```bash
-uv sync   # this will create a virtual environment if not present
+uv sync   # this will create a virtual environment if not present and installs necessary dependencies
 ```
 
-## Usage
+## Configuring the Server to MCP Clients
 
 To run the server:
 
@@ -47,7 +39,7 @@ To run the server:
 python main.py
 ```
 
-To Configure with MCP Clients like VS Code and Claude using local fork
+To Configure with MCP Clients like VS Code and Claude using local forked repository
 ```
 {
   "mcpServers": {
@@ -112,3 +104,12 @@ futureagi-mcp-server/
 └── README.md                     # This file
 
 ```
+
+## Contribution are Welcome!
+
+### Guidelines for contributing
+* Clone the repository either using https or ssh
+* Create the venv using `uv pip install ".[dev]"`
+* This will create and install all the required dependencies in a virtual environment
+* Ensure to activate the environment
+* Make necessary changes and run git commit. It will run the pre-commit hooks. Solve any of the failed checks.
