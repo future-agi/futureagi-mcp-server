@@ -5,9 +5,9 @@ A powerful server implementation that integrates with the Future AGI SDK through
 ## Features
 
 🚀 Natural Language Evaluations—At Scale
-Why write scripts when you can just ask? Whether it’s a single response or thousands, Futurea AGI MCP lets you run advanced evaluations like hallucination detection, sentiment analysis, or factuality scoring through a simple chat prompt. It auto-selects evaluators, runs them in the background, and delivers results—zero setup, maximum speed.
+Why write scripts when you can just ask? Whether it’s a single response or thousands, Future AGI MCP lets you run advanced evaluations like hallucination detection, sentiment analysis, or factuality scoring through a simple chat prompt. It auto-selects evaluators, runs them in the background, and delivers results—zero setup, maximum speed.
 
-📂 Upload Datasets and Launch Evaluations Instantly
+📂 Upload Datasets and Add Evaluations Instantly
 Drop in a dataset and say the word. MCP handles file uploads, picks the right evaluators, and kicks off evaluations—all in the background, all from a single prompt. No GUIs, no manual tagging, just fast, intelligent data processing that works right inside your dev tools.
 
 ## Installation
@@ -40,6 +40,7 @@ python main.py
 ```
 
 To Configure with MCP Clients like VS Code and Claude using local forked repository
+
 ```
 {
   "mcpServers": {
@@ -63,6 +64,7 @@ To Configure with MCP Clients like VS Code and Claude using local forked reposit
 ```
 
 A simple Configuration using uvx and published package
+
 ```
 {
   "mcpServers": {
@@ -98,6 +100,7 @@ futureagi-mcp-server/
 │   ├── test_dataset.py           # Dataset tests
 │   ├── test_protect.py           # Protection tests
 │   └── test_evals.py             # Evaluation tests
+├── .pre-commit-conifg.yaml       # pre-commit hooks that run before every commit
 ├── pyproject.toml                # Project configuration and dependencies
 ├── uv.lock                       # Dependency lock file
 ├── .gitignore                    # Git ignore rules
@@ -108,6 +111,7 @@ futureagi-mcp-server/
 ## Contribution are Welcome!
 
 ### Guidelines for contributing
+
 * Clone the repository either using https or ssh
 * Create the venv using `uv pip install ".[dev]"`
 * This will create and install all the required dependencies in a virtual environment

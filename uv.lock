@@ -218,7 +218,7 @@ wheels = [
 
 [[package]]
 name = "futureagi"
-version = "0.5.9"
+version = "0.5.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
@@ -236,9 +236,9 @@ dependencies = [
     { name = "tzdata" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5c/74/6aa945a064a01c321d1172ab422815c6cea6bb4c4426211757563a61abcc/futureagi-0.5.9.tar.gz", hash = "sha256:ef2909f812799c945fd7be75a9715f499854d27cc153ad71eda8b56774f403a9", size = 47715, upload-time = "2025-04-16T12:37:08.021Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/4b/f3256854796a078916df39d955bf71171540ece7fb0c4f0bf926e0c53379/futureagi-0.5.10.tar.gz", hash = "sha256:34c828b8e09ae0a2200bc9458e3219577a8796cba2a25055541212a59c2a2111", size = 48716, upload-time = "2025-05-05T06:33:10.085Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/63/27/6fc8402bd7ba2efbe1239a343f0e52836c7c363f4e94ec46ca2032ba0b80/futureagi-0.5.9-py3-none-any.whl", hash = "sha256:d9154d98bf0feb8e5715118d6ea2182d6d70e75043bf7dd511d211fc0feed310", size = 56624, upload-time = "2025-04-16T12:37:06.487Z" },
+    { url = "https://files.pythonhosted.org/packages/23/35/c3b4ecde313033ca775cdf59eb952b684ed9fc9bdbdade0da4094f55a879/futureagi-0.5.10-py3-none-any.whl", hash = "sha256:9be344b67da36bd3be78a654a5b103a0d8ee014a4c30a21109440dc9ed4c2b92", size = 57725, upload-time = "2025-05-05T06:33:08.038Z" },
 ]
 
 [[package]]
@@ -263,7 +263,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "futureagi", specifier = ">=0.5.9" },
+    { name = "futureagi", specifier = ">=0.5.10" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.6.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.6.0" },
