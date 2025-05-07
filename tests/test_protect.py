@@ -1,6 +1,6 @@
 import pytest
 
-from src.tools.protect import protect
+from futureagi_mcp_server.tools.protect import protect
 
 
 @pytest.fixture

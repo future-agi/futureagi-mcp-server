@@ -4,7 +4,7 @@ import time
 import pytest
 
 # Import tool functions directly
-from src.tools.evals import (
+from futureagi_mcp_server.tools.evals import (
     all_evaluators,
     create_eval,
     evaluate,
