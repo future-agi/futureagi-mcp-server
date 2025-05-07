@@ -32,6 +32,10 @@ from .tools.evals import (
     get_evals_list_for_create_eval,
 )
 from .tools.protect import PROTECT_DESCRIPTION, protect
+from .tools.syntheticdatagen import (
+    GENERATE_SYNTHETIC_DATA_DESCRIPTION,
+    generate_synthetic_data,
+)
 from .utils import setup_environment
 
 logger = get_logger()
@@ -323,6 +327,79 @@ def get_server(
                     "required": ["dataset_name"],
                 },
             ),
+            types.Tool(
+                name="generate_synthetic_data",
+                description=GENERATE_SYNTHETIC_DATA_DESCRIPTION,
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "dataset": {
+                            "type": "object",
+                            "description": "Metadata describing the dataset to be generated.",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "A clear, descriptive title for your dataset. Example: 'Customer Support Logs'",
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "A detailed explanation of the dataset's contents, purpose, and context.",
+                                },
+                                "objective": {
+                                    "type": "string",
+                                    "description": "The main goal or intended use case for the dataset. Example: 'To fine-tune a language model for customer support scenarios.'",
+                                },
+                                "patterns": {
+                                    "type": "string",
+                                    "description": "Specific instructions or stylistic patterns to follow when generating data. Example: 'Follow a conversational pattern with alternating customer and agent messages.'",
+                                },
+                            },
+                            "required": [
+                                "name",
+                                "description",
+                                "objective",
+                                "patterns",
+                            ],
+                        },
+                        "num_rows": {
+                            "type": "integer",
+                            "description": "The total number of rows (examples) to generate in the dataset. Example: 1000.",
+                        },
+                        "columns": {
+                            "type": "array",
+                            "description": "The schema definition for each column in the dataset. Each object describes one column.",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The column's name. Should be unique and descriptive. Example: 'customer_id'",
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "A detailed description of what this column represents. Example: 'The unique identifier for each customer.'",
+                                    },
+                                    "data_type": {
+                                        "type": "string",
+                                        "description": "The type of data stored in this column. Supported types: 'text', 'float', 'integer', 'boolean', 'array', 'json', 'datetime'. Example: 'integer'",
+                                    },
+                                    "property": {
+                                        "type": "object",
+                                        "description": "Additional constraints or characteristics for the column. For numeric columns: specify 'min', 'max', etc. For text columns: specify 'min_length', 'max_length', 'pattern', etc. For categorical columns: specify 'values' (list of allowed values). For all columns: add any other relevant constraints or metadata.",
+                                    },
+                                },
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "data_type",
+                                    "property",
+                                ],
+                            },
+                        },
+                    },
+                    "required": ["dataset", "num_rows", "columns"],
+                },
+            ),
         ]
 
     @server.call_tool()
@@ -355,6 +432,8 @@ def get_server(
                 result = await download_dataset(**arguments)
             elif name == "get_evaluation_insights":
                 result = await get_evaluation_insights(**arguments)
+            elif name == "generate_synthetic_data":
+                result = await generate_synthetic_data(**arguments)
             else:
                 logger.warning(f"Unknown tool name received: {name}")
                 return [
