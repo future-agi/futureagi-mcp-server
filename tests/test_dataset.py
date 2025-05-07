@@ -5,7 +5,10 @@ import uuid
 
 import pytest
 
-from src.tools.datasets import add_evaluation_to_dataset, upload_dataset
+from futureagi_mcp_server.tools.datasets import (
+    add_evaluation_to_dataset,
+    upload_dataset,
+)
 
 
 @pytest.fixture
