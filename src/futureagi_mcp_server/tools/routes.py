@@ -11,6 +11,8 @@ class Routes(Enum):
     EVALS_LIST = f"{DEVELOPS}/get_evals_list/"
     RUN_EVAL = f"{MODEL_HUB}/run-eval"
 
+    SYNTHETIC_DATA_GEN = f"{MODEL_HUB}/develops/create-synthetic-dataset/"
+
     @staticmethod
     def eval_structure(template_id: str) -> str:
         return f"{Routes.DEVELOPS.value}/get_eval_structure/{template_id}/"
