@@ -12,6 +12,8 @@ from futureagi_mcp_server.tools.evals import (
     get_evals_list_for_create_eval,
 )
 
+path_to_image = "./tests/testimage.png"
+
 
 @pytest.fixture
 def eval_request():
@@ -161,3 +163,31 @@ async def test_deterministic_eval(deterministic_eval_payload):
     assert isinstance(response_data["eval_results"], list)
     # Optionally print or check the results
     print("Deterministic Eval Results:", response_data["eval_results"])
+
+
+@pytest.mark.asyncio
+async def test_mllm_deterministic_eval():
+    """Test MLLM evaluation"""
+    mllm_eval_payload = {
+        "eval_templates": [
+            {
+                "eval_id": "3",
+                "config": {
+                    "input": {"input1": "input", "input2": "image_url"},
+                    "choices": ["Yes", "No"],
+                    "rule_prompt": "Does the {{input1}} accurately describe what is shown in {{input2}}?",
+                    "multi_choice": False,
+                },
+            }
+        ],
+        "inputs": [
+            {
+                "input": "An Asian man playing badminton with Indian",
+                "image_url": path_to_image,
+            }
+        ],
+    }
+
+    response_data = await evaluate(**mllm_eval_payload)
+    assert "eval_results" in response_data
+    assert isinstance(response_data["eval_results"], list)

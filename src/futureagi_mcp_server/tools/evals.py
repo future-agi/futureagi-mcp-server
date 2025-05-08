@@ -6,7 +6,7 @@ from fi.api.auth import APIKeyAuth
 from fi.api.types import HttpMethod, RequestConfig
 from fi.evals import EvalClient
 from fi.evals.templates import EvalTemplate
-from fi.testcases import TestCase
+from fi.testcases import MLLMTestCase
 from pydantic import ConfigDict
 
 from ..logger import get_logger
@@ -104,6 +104,8 @@ EVALUATE_DESCRIPTION = """
     4. Provide input data matching the placeholder mapping
        - Input field keys must match the values of the corresponding placeholder
        - Include all required fields for evaluation
+       - Also ensure when providing the url for the image, it is a valid url and input field key is image_url and url should be absolute path
+       - Also ensure when providing the url for the audio, it is a valid url and input field key is input_audio and url should be absolute path
 
     Example payload:
     {
@@ -360,7 +362,7 @@ async def evaluate(eval_templates: List[dict], inputs: List[dict]) -> dict:
             input_fields = {k: Optional[type(v)] for k, v in input_item.items()}
             DynamicTestCase = type(
                 "DynamicTestCase",
-                (TestCase,),
+                (MLLMTestCase,),
                 {
                     "__annotations__": input_fields,
                     "model_config": ConfigDict(extra="allow"),

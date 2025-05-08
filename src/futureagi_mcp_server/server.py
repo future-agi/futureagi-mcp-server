@@ -378,6 +378,7 @@ def get_server(
                         text="""
 Convert the output to MARKDOWN.md code block format (this is mandatory).
 Do not use plain text, lists, or any other format.
+Try to represent the output in a table format within the markdown code block.
 """,
                         type="text",
                     ),
