@@ -1,0 +1,28 @@
+[project]
+name = "futureagi-mcp-server"
+version = "0.1.0"
+description = "Future AGI MCP Server"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "futureagi>=0.5.10",
+    "httpx>=0.28.1",
+    "mcp[cli]>=1.6.0",
+    "pydantic>=2.11.2"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "respx>=0.20.2",
+    "pre-commit>=3.6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+futureagi-mcp-server = "futureagi_mcp_server:main"
