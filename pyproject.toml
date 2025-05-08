@@ -1,7 +1,7 @@
 [project]
 name = "futureagi-mcp-server"
 version = "0.1.0"
-description = "FutureAGI MCP Server"
+description = "Future AGI MCP Server"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

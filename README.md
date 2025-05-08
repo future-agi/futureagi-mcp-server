@@ -4,11 +4,9 @@ A powerful server implementation that integrates with the Future AGI SDK through
 
 ## Features
 
-🚀 Natural Language Evaluations—At Scale
-Why write scripts when you can just ask? Whether it’s a single response or thousands, Future AGI MCP lets you run advanced evaluations like hallucination detection, sentiment analysis, or factuality scoring through a simple chat prompt. It auto-selects evaluators, runs them in the background, and delivers results—zero setup, maximum speed.
+**Run automatic evaluations** — Evaluate batch and single inputs on various [evaluation](https://docs.futureagi.com/future-agi/products/evaluation/overview) metrics present in Future AGI both on local datapoints and large datasets
 
-📂 Upload Datasets and Add Evaluations Instantly
-Drop in a dataset and say the word. MCP handles file uploads, picks the right evaluators, and kicks off evaluations—all in the background, all from a single prompt. No GUIs, no manual tagging, just fast, intelligent data processing that works right inside your dev tools.
+**Manage datasets** — Upload, evaluate, download [datasets](https://docs.futureagi.com/future-agi/products/dataset/overview) and find insights with natural language
 
 ## Installation
 
@@ -33,13 +31,20 @@ uv sync   # this will create a virtual environment if not present and installs n
 
 ## Configuring the Server to MCP Clients
 
-To run the server:
+Create an account at **[http://app.futureagi.com/](http://app.futureagi.com/) and obtain your** **API key** **and** **Secret key** from the dashboard. These credentials are required for the Future AGI MCP Server to authenticate with our API. Export them by running the following command in your terminal
+
+```
+export FI_API_KEY="your_api_key"
+export FI_SECRET_KEY="your_secret_key"
+```
+
+To run the server locally and debugging issues:
 
 ```bash
 python main.py
 ```
 
-To Configure with MCP Clients like VS Code and Claude using local forked repository
+To Configure with MCP Clients like VS Code and Claude using local forked repository. Use this for testing your code changes using client
 
 ```
 {
@@ -63,7 +68,7 @@ To Configure with MCP Clients like VS Code and Claude using local forked reposit
 }
 ```
 
-A simple Configuration using uvx and published package
+To Configure using uvx and published package.
 
 ```
 {
