@@ -92,15 +92,16 @@ To Configure using uvx and published package.
 ```
 futureagi-mcp-server/
 ├── src/                          # Source code directory
-│   ├── server.py                 # Main server implementation
-│   ├── utils.py                  # Utility functions
-│   ├── constants.py              # Constants and configuration
-│   ├── logger.py                 # Logging configuration
-│   └── tools/                    # Tools directory
-│       ├── evals.py              # Evaluation tools
-│       ├── datasets.py           # Dataset tools
-│       ├── protect.py            # Protection tools
-│       └── routes.py             # Route management
+│   └──futureagi_mcp_server
+│   	├── server.py                 # Main server implementation
+│  	├── utils.py                  # Utility functions
+│   	├── constants.py              # Constants and configuration
+│   	├── logger.py                 # Logging configuration
+│   	└── tools/                    # Tools directory
+│            ├── evals.py             # Evaluation tools
+│            ├── datasets.py          # Dataset tools
+│            ├── protect.py           # Protection tools
+│            └── routes.py            # Route management
 ├── tests/                        # Test directory
 │   ├── test_dataset.py           # Dataset tests
 │   ├── test_protect.py           # Protection tests
