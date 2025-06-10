@@ -8,6 +8,8 @@ A powerful server implementation that integrates with the Future AGI SDK through
 
 **Manage datasets** — Upload, evaluate, download [datasets](https://docs.futureagi.com/future-agi/products/dataset/overview) and find insights with natural language
 
+**Synthetic Data Generation** — Generate Synthetic Data by describing about the dataset and objective
+
 ## Installation
 
 1. Clone the repository:
@@ -101,11 +103,13 @@ futureagi-mcp-server/
 │            ├── evals.py             # Evaluation tools
 │            ├── datasets.py          # Dataset tools
 │            ├── protect.py           # Protection tools
+│            ├── syntheticdatagen.py  # Synthetic Data Generation
 │            └── routes.py            # Route management
 ├── tests/                        # Test directory
 │   ├── test_dataset.py           # Dataset tests
 │   ├── test_protect.py           # Protection tests
-│   └── test_evals.py             # Evaluation tests
+│   ├── test_evals.py             # Evaluation tests
+│   └── test_syntheticdata.py     # Synthetic Data Generation tests
 ├── .pre-commit-conifg.yaml       # pre-commit hooks that run before every commit
 ├── pyproject.toml                # Project configuration and dependencies
 ├── uv.lock                       # Dependency lock file
